@@ -1,3 +1,3 @@
-from labyrinth.backgrounds.protocol import BackgroundGenerator
+from labyrinth.backgrounds.protocol import BackgroundGenerator, ColorGenerator
 
-__all__ = ("BackgroundGenerator",)
+__all__ = ("BackgroundGenerator", "ColorGenerator")
