@@ -3,12 +3,10 @@
 
 from typing import Protocol
 
-import numpy as np
-
-from labyrinth.types.array import Array, Shape
+from labyrinth.types import Array
 
 
 class ImageAugmentation(Protocol):
     def __init__(self, *args, **kwargs) -> None: ...
 
-    def __call__(self, array: Array[Shape, np.uint8]) -> Array[Shape, np.uint8]: ...
+    def __call__(self, array: Array) -> Array: ...
