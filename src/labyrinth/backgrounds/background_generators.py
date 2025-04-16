@@ -1,16 +1,9 @@
 #!/usr/bin/env python
-# -*- coding: utf-8 -*-
-#
-# Vidrovr Inc.
 # By: Zack Taylor
 
-# Standard libraries
 import numpy as np
 
 from labyrinth.backgrounds import ColorGenerator
-
-# External libraries
-# Internal libraries
 from labyrinth.types import Array
 
 rng = np.random.default_rng()
