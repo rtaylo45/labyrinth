@@ -24,15 +24,15 @@ class RGBColorGenerator:
                 f"color_min ({color_min}) must be larger than color_max ({color_max})"
             )
 
-        self.color_min = color_min
-        self.color_max = color_max
+        self._color_min = color_min
+        self._color_max = color_max
 
     def __call__(
         self,
     ) -> RGB:
-        r = int(rng.integers(self.color_min, self.color_max))
-        g = int(rng.integers(self.color_min, self.color_max))
-        b = int(rng.integers(self.color_min, self.color_max))
+        r = int(rng.integers(self._color_min, self._color_max))
+        g = int(rng.integers(self._color_min, self._color_max))
+        b = int(rng.integers(self._color_min, self._color_max))
 
         return (r, g, b)
 
