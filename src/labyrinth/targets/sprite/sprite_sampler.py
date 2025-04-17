@@ -14,30 +14,30 @@ from labyrinth.types import Array
 rng = np.random.default_rng()
 
 
-class COCOMaskSampler:
+class COCOSpriteSampler:
     _is_coco_seq: bool
     _coco: COCO | None
     _import_folder: str | None
-    _max_num_mask: int
+    _max_num_sprites: int
     _mask_files: dict[int, List[str]]
 
     def __init__(
         self,
         coco: COCO | None,
         import_folder: str | None,
-        max_num_mask: int = 1,
+        max_num_sprites: int = 1,
     ) -> None:
         self._coco = coco
         self._import_folder = import_folder
         if (coco is not None) or (import_folder is not None):
             self._mask_files = self._get_mask_files()
-        self._max_num_mask = max_num_mask
+        self._max_num_sprites = max_num_sprites
 
     def __add__(self, other):
-        if isinstance(other, COCOMaskSampler):
-            max_num_mask = np.max([self._max_num_mask, other._max_num_mask])
-            ret = COCOMaskSampler(
-                coco=None, import_folder=None, max_num_mask=max_num_mask
+        if isinstance(other, COCOSpriteSampler):
+            max_num_sprites = np.max([self._max_num_sprites, other._max_num_sprites])
+            ret = COCOSpriteSampler(
+                coco=None, import_folder=None, max_num_sprites=max_num_sprites
             )
             ret._mask_files = self._mask_files
 
@@ -55,7 +55,7 @@ class COCOMaskSampler:
         else:
             raise TypeError("Unsupported operation.")
 
-    def _get_mask_files(self) -> dict[int, list[str]]:
+    def _get_sprite_files(self) -> dict[int, list[str]]:
         assert self._coco is not None
 
         anno_image_folder = (
@@ -69,12 +69,12 @@ class COCOMaskSampler:
         )
 
         label_ids = [self._get_label_id(file) for file in mask_files]
-        label_mask_map = {label_id: [] for label_id in label_ids}
+        label_sprite_map = {label_id: [] for label_id in label_ids}
 
         for label_id, mask_file in zip(label_ids, mask_files):
-            label_mask_map[label_id].append(mask_file)
+            label_sprite_map[label_id].append(mask_file)
 
-        return label_mask_map
+        return label_sprite_map
 
     def _get_id(self, file_name: str, keyword: str) -> int:
         base = os.path.basename(file_name)
@@ -102,8 +102,8 @@ class COCOMaskSampler:
         if label_id is not None:
             file_range = self._mask_files[label_id]
             num_mask = (
-                rng.integers(low=1, high=self._max_num_mask)
-                if self._max_num_mask != 1
+                rng.integers(low=1, high=self._max_num_sprites)
+                if self._max_num_sprites != 1
                 else 1
             )
 
@@ -111,8 +111,8 @@ class COCOMaskSampler:
         else:
             label_range = list(self._mask_files.keys())
             num_mask = (
-                rng.integers(low=1, high=self._max_num_mask)
-                if self._max_num_mask != 1
+                rng.integers(low=1, high=self._max_num_sprites)
+                if self._max_num_sprites != 1
                 else 1
             )
             labels = list(rng.choice(label_range, size=num_mask))
@@ -124,7 +124,7 @@ class COCOMaskSampler:
 
         return files
 
-    def _read_mask(self, file: str) -> Array:
+    def _read_sprite(self, file: str) -> Array:
         return np.array(Image.open(file), dtype=np.uint8)
 
     def __call__(
@@ -133,6 +133,6 @@ class COCOMaskSampler:
     ) -> Tuple[List[Array], List[int]]:
         mask_files = self._sample_files(label_id=label_id)
         labels = [self._get_label_id(file_name) for file_name in mask_files]
-        mask_arrays = [self._read_mask(file_name) for file_name in mask_files]
+        mask_arrays = [self._read_sprite(file_name) for file_name in mask_files]
 
         return mask_arrays, labels
