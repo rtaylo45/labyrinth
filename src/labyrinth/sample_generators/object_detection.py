@@ -13,7 +13,7 @@ from labyrinth.types import Array
 from labyrinth.utils import with_timeout
 
 
-class GenerateSprite:
+class GenerateSample:
     _background_generator: BackgroundGenerator
     _sprite_sampler: SpriteSampler
     _sprite_placer: SpritePlacer
