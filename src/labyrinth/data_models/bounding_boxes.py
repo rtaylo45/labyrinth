@@ -1,10 +1,20 @@
 #!/usr/bin/env python
 # Vidrovr Inc.
 
-from typing import List, Self, Sequence, Tuple
+from typing import List, Protocol, Self, Sequence, Tuple
 
 import numpy as np
 from pydantic import BaseModel
+
+
+class BoundingBox(Protocol):
+    @classmethod
+    def from_list(cls, bbox: List[float]) -> Self: ...
+
+    @classmethod
+    def from_dict(cls, dict_: dict) -> Self: ...
+
+    def to_xyxy_list(self) -> Tuple[int, int, int, int]: ...
 
 
 class X4Y4(BaseModel):
@@ -36,6 +46,15 @@ class XYWH(BaseModel):
     @classmethod
     def from_list(cls, bbox: List[float]) -> Self:
         return cls(x=bbox[0], y=bbox[1], width=bbox[2], height=bbox[3])
+
+    @classmethod
+    def from_dict(cls, bbox: dict[str, int | float]) -> Self:
+        x = bbox["x"]
+        y = bbox["y"]
+        width = bbox["width"]
+        height = bbox["height"]
+
+        return cls(x=x, y=y, width=width, height=height)
 
     def to_numpy_indices(self) -> Sequence:
         y0 = int(self.y)

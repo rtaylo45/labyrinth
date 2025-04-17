@@ -3,8 +3,7 @@
 
 from typing import List, Protocol, Tuple
 
-from pydantic import BaseModel
-
+from labyrinth.data_models.bounding_boxes import BoundingBox
 from labyrinth.types import Array
 
 
@@ -15,7 +14,7 @@ class SpritePlacer(Protocol):
         self,
         mask_arrays: List[Array],
         background_array: Array,
-    ) -> Tuple[Array, BaseModel]: ...
+    ) -> Tuple[Array, List[BoundingBox]]: ...
 
 
 class SpriteSampler(Protocol):

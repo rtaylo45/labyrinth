@@ -6,7 +6,7 @@ from uuid import uuid4
 
 from pydantic import UUID4, BaseModel, Field
 
-from labyrinth.data_models.bounding_boxes import XYWH
+from labyrinth.data_models.bounding_boxes import BoundingBox
 
 
 class Annotation(BaseModel):
@@ -15,7 +15,7 @@ class Annotation(BaseModel):
     id: UUID4 | int = Field(default_factory=uuid4)
     image_id: UUID4 | int
     category_id: UUID4 | int
-    bbox: BaseModel
+    bbox: BoundingBox
 
 
 class SegmentationRLE(BaseModel):
@@ -27,10 +27,10 @@ class SegmentationRLE(BaseModel):
     counts: List[int]
     size: tuple[int, int]
     area: int
-    bbox: XYWH
+    bbox: BoundingBox
 
     @classmethod
-    def from_pycoco(cls, annotation: dict[str, Any]) -> Self:
+    def from_pycoco(cls, annotation: dict[str, Any], bbcls: BoundingBox) -> Self:
         # Unpack annotation
         id = annotation["id"]
         image_id = annotation["image_id"]
@@ -38,7 +38,7 @@ class SegmentationRLE(BaseModel):
         area = int(annotation["area"])
         counts = annotation["segmentation"]["counts"]
         size = annotation["segmentation"]["size"]
-        bbox = XYWH.from_list(annotation["bbox"])
+        bbox = bbcls.from_list(annotation["bbox"])
 
         return cls(
             id=id,

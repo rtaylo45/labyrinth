@@ -5,7 +5,7 @@ from typing import List, Tuple
 
 import numpy as np
 
-from labyrinth.data_models.bounding_boxes import XYWH
+from labyrinth.data_models.bounding_boxes import BoundingBox
 from labyrinth.types import HWCImage
 from labyrinth.utils.general import calculate_iou
 from labyrinth.utils.sprite import place_sprite
@@ -14,6 +14,7 @@ rng = np.random.default_rng()
 
 
 class UniformSpritePlacer:
+    _bbcls: BoundingBox
     _x_min: int | None
     _y_min: int | None
     _x_max: int | None
@@ -21,17 +22,21 @@ class UniformSpritePlacer:
 
     def __init__(
         self,
+        bbox_cls: BoundingBox,
         x_min: int | None = None,
         y_min: int | None = None,
         x_max: int | None = None,
         y_max: int | None = None,
     ) -> None:
+        self._bbcls = bbox_cls
         self._x_min = x_min
         self._y_min = y_min
         self._x_max = x_max
         self._y_max = y_max
 
-    def _check_clash(self, candidate: XYWH, bboxs: List[XYWH], iou_thresh: float = 0.0):
+    def _check_clash(
+        self, candidate: BoundingBox, bboxs: List[BoundingBox], iou_thresh: float = 0.0
+    ):
         # First mask to place just return true
         if len(bboxs) == 0:
             return False
@@ -53,7 +58,7 @@ class UniformSpritePlacer:
         self,
         mask_arrays: List[HWCImage[np.uint8]],
         background_array: HWCImage[np.uint8],
-    ) -> Tuple[HWCImage[np.uint8], List[XYWH]]:
+    ) -> Tuple[HWCImage[np.uint8], List[BoundingBox]]:
         """Places mask in an array and returns the array with bounding boxes.
 
         Args:
@@ -99,7 +104,8 @@ class UniformSpritePlacer:
 
                 # This part assumes that the mask array is a cropped bounding box of the object
                 h, w = mask_array.shape[:2]
-                xywh = XYWH(x=x_start, y=y_start, width=w, height=h)
+                dict_ = {"x": x_start, "y": y_start, "width": w, "height": h}
+                xywh = self._bbcls.from_dict(dict_)
 
                 # If false break the while loop
                 box_clash = self._check_clash(xywh, bboxs)
