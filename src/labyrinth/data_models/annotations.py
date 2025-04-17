@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 # Vidrovr Inc.
 
-from typing import Any, List, Self
+from typing import Any, List, Protocol, Self
 from uuid import uuid4
 
 from pydantic import UUID4, BaseModel, Field
@@ -9,13 +9,9 @@ from pydantic import UUID4, BaseModel, Field
 from labyrinth.data_models.bounding_boxes import BoundingBox
 
 
-class Annotation(BaseModel):
-    """Annotation info."""
-
-    id: UUID4 | int = Field(default_factory=uuid4)
-    image_id: UUID4 | int
-    category_id: UUID4 | int
-    bbox: BoundingBox
+class Annotation(Protocol):
+    @classmethod
+    def from_pycoco(cls, annotation: Any, bbcls: BoundingBox) -> Self: ...
 
 
 class SegmentationRLE(BaseModel):

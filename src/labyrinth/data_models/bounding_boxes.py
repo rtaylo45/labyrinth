@@ -16,6 +16,8 @@ class BoundingBox(Protocol):
 
     def to_xyxy_list(self) -> Tuple[int, int, int, int]: ...
 
+    def to_numpy_indices(self) -> Sequence: ...
+
 
 class X4Y4(BaseModel):
     """Defines a bounding box with 4 (x, y) coord points."""

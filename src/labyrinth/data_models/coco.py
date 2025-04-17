@@ -7,6 +7,7 @@ from uuid import uuid4
 
 from pydantic import UUID4, BaseModel, Field
 
+from labyrinth.data_models.annotations import Annotation
 from labyrinth.data_models.media import Image
 
 
@@ -43,4 +44,4 @@ class COCO(BaseModel):
     licenses: List[License] | None = None
     categories: List[Category] | None = None
     images: dict[UUID4 | int, Image] = Field(default_factory=dict)
-    annotations: dict[UUID4 | int, BaseModel] = Field(default_factory=dict)
+    annotations: dict[UUID4 | int, Annotation] = Field(default_factory=dict)
