@@ -8,7 +8,7 @@ from pydantic import BaseModel
 from labyrinth.types import Array
 
 
-class MaskPlacer(Protocol):
+class SpritePlacer(Protocol):
     def __init__(self, *args, **kwargs) -> None: ...
 
     def __call__(
@@ -18,7 +18,7 @@ class MaskPlacer(Protocol):
     ) -> Tuple[Array, BaseModel]: ...
 
 
-class MaskSampler(Protocol):
+class SpriteSampler(Protocol):
     def __init__(self, *args, **kwargs) -> None: ...
 
     def __call__(

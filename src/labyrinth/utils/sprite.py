@@ -8,15 +8,15 @@ from labyrinth.data_models.annotations import SegmentationRLE
 from labyrinth.types import Array, HWCImage
 
 
-def mask_read(annotation: SegmentationRLE) -> Array:
-    """Converts the pydantic Annotation to a binary numpy array mask.
+def sprite_read(annotation: SegmentationRLE) -> Array:
+    """Converts the pydantic Annotation to a binary numpy array sprite.
 
     Args:
         annotation: Pydantic model for AnnotationRLE. This represents a segmentation
             annotation in the RLE uncompressed format
 
     Returns:
-        mask: Binary numpy array, indecated 0 or 1 for in the mask is located at
+        sprite: Binary numpy array, indecated 0 or 1 for in the mask is located at
             those pixel locations
 
     """
@@ -28,42 +28,42 @@ def mask_read(annotation: SegmentationRLE) -> Array:
     # of their fuctions. Wish i could do that with this call
     rle = frPyObjects(seg, h, w)  # type: ignore
 
-    # Decode RLE into numpy binary mask
-    mask = decode(rle)
+    # Decode RLE into numpy binary sprite mask
+    sprite = decode(rle)
 
-    # Crop the mask from the original image to a bounding box with only the mask
+    # Crop the mask from the original image to a bounding box with only the sprite
     idxs = bbox.to_numpy_indices()
 
-    return mask[idxs]
+    return sprite[idxs]
 
 
-def mask_crop(
-    image_array: HWCImage[np.uint8], binary_mask: HWCImage[np.uint8]
+def sprite_crop(
+    image_array: HWCImage[np.uint8], binary_sprite: HWCImage[np.uint8]
 ) -> Array:
-    """Returns a numpy array with mask in forground and background is transparent.
+    """Returns a numpy array with sprite in forground and background is transparent.
 
     Args:
         image_array: Numpy array of the original image
-        binary_mask: Numpy array of the binary mask for the sprite
+        binary_sprite: Numpy array of the binary mask for the sprite
 
     Returns:
-        transparent_mask: Numpy array of RGBA image with a transparent background
+        transparent_sprite: Numpy array of RGBA image with a transparent background
 
     """
-    binary_mask_ = binary_mask[..., None]
+    binary_sprite_ = binary_sprite[..., None]
 
-    transparent_mask = np.concatenate([image_array, binary_mask_ * 255], axis=-1)
+    transparent_mask = np.concatenate([image_array, binary_sprite_ * 255], axis=-1)
 
     return transparent_mask
 
 
-def place_mask(
+def place_sprite(
     x_min: int,
     y_min: int,
     background_array: HWCImage[np.uint8],
-    mask_array: HWCImage[np.uint8],
+    sprite_array: HWCImage[np.uint8],
 ) -> Array:
-    """Places the mask in the background.
+    """Places the sprite in the background.
 
     Inplace operation but I return the array anyway.
 
@@ -71,13 +71,13 @@ def place_mask(
         x_min: Upper left corner x value
         y_min: Upper left corner y value
         background_array: The background to place in the mask
-        mask_array: The sprite array
+        sprite_array: The sprite array
 
     Returns:
-        background_array: The background with the mask placed
+        background_array: The background with the sprite placed
     """
     # Get max pad dims
-    mask_height, mask_width = mask_array.shape[:2]
+    mask_height, mask_width = sprite_array.shape[:2]
     background_height, background_width = background_array.shape[:2]
     y_max = np.min([background_height, y_min + mask_height])
     x_max = np.min([background_width, x_min + mask_width])
@@ -85,15 +85,15 @@ def place_mask(
 
     # Get the background patch
     patch = background_array[patch_idx]
-    mask_alpha_idx = np.s_[: patch.shape[0], : patch.shape[1], 3]
-    mask_rgb_idx = np.s_[: patch.shape[0], : patch.shape[1], :3]
+    sprite_alpha_idx = np.s_[: patch.shape[0], : patch.shape[1], 3]
+    sprite_rgb_idx = np.s_[: patch.shape[0], : patch.shape[1], :3]
 
     # Convert 255 to 1 on alpha channel
-    alpha_mask = mask_array[mask_alpha_idx] // 255
-    alpha_mask = alpha_mask[..., None]
+    alpha_sprite = sprite_array[sprite_alpha_idx] // 255
+    alpha_sprite = alpha_sprite[..., None]
 
     # Splice the patch together
-    patch = mask_array[mask_rgb_idx] * alpha_mask + patch * (1 - alpha_mask)
+    patch = sprite_array[sprite_rgb_idx] * alpha_sprite + patch * (1 - alpha_sprite)
 
     # Apply the mask
     background_array[patch_idx] = patch
