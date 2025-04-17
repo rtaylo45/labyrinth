@@ -7,7 +7,7 @@ import numpy as np
 
 from labyrinth.augmentations import ImageAugmentation
 from labyrinth.backgrounds import BackgroundGenerator
-from labyrinth.data_models.bounding_boxes import XYWH
+from labyrinth.data_models.bounding_boxes import BoundingBox
 from labyrinth.targets.sprite import SpritePlacer, SpriteSampler
 from labyrinth.types import Array
 from labyrinth.utils import with_timeout
@@ -35,7 +35,7 @@ class GenerateSprite:
         self,
         label_id: int | None = None,
         timeout: int | None = None,
-    ) -> Tuple[Array, list[int], list[XYWH]]:
+    ) -> Tuple[Array, list[int], list[BoundingBox]]:
         """Return an object detection training sample.
 
         Returns:
