@@ -1,12 +1,13 @@
 #!/usr/bin/env python
 # Vidrovr Inc.
 
-from typing import Any, List, Protocol, Self, Sequence, Tuple
+from typing import Any, List, Protocol, Self, Sequence, Tuple, runtime_checkable
 
 import numpy as np
 from pydantic import BaseModel
 
 
+@runtime_checkable
 class BoundingBox(Protocol):
     @classmethod
     def from_list(cls, bbox: List[float]) -> Self: ...

@@ -1,16 +1,17 @@
 #!/usr/bin/env python
 # Vidrovr Inc.
 
-from typing import Any, List, Protocol, Self
+from typing import Any, List, Protocol, Self, runtime_checkable
 from uuid import uuid4
 
-from pydantic import UUID4, BaseModel, Field
+from pydantic import UUID4, BaseModel, ConfigDict, Field
 
 from labyrinth.data_models.bounding_boxes import BoundingBox
 
 
+@runtime_checkable
 class Annotation(Protocol):
-    id: UUID4 | int = Field(default_factory=uuid4)
+    id: UUID4 | int
     image_id: UUID4 | int
     category_id: UUID4 | int
     counts: List[int]
@@ -24,6 +25,8 @@ class Annotation(Protocol):
 
 class SegmentationRLE(BaseModel):
     """Annotation info."""
+
+    model_config = ConfigDict(arbitrary_types_allowed=True)
 
     id: UUID4 | int = Field(default_factory=uuid4)
     image_id: UUID4 | int

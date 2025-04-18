@@ -5,7 +5,7 @@ from datetime import datetime
 from typing import List
 from uuid import uuid4
 
-from pydantic import UUID4, BaseModel, Field
+from pydantic import UUID4, BaseModel, ConfigDict, Field
 
 from labyrinth.data_models.annotations import Annotation
 from labyrinth.data_models.media import Image
@@ -39,6 +39,7 @@ class Category(BaseModel):
 
 
 class COCO(BaseModel):
+    model_config = ConfigDict(arbitrary_types_allowed=True)
     annotation_file: str = ""
     info: Info | None = None
     licenses: List[License] | None = None
