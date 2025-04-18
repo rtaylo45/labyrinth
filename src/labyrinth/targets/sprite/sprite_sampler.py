@@ -30,7 +30,7 @@ class COCOSpriteSampler:
         self._coco = coco
         self._import_folder = import_folder
         if (coco is not None) or (import_folder is not None):
-            self._mask_files = self._get_mask_files()
+            self._mask_files = self._get_sprite_files()
         self._max_num_sprites = max_num_sprites
 
     def __add__(self, other):
