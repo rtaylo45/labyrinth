@@ -3,7 +3,7 @@
 
 import numpy as np
 
-from labyrinth.backgrounds import ColorGenerator
+from labyrinth.backgrounds.protocol import ColorGenerator
 from labyrinth.types import Array
 
 rng = np.random.default_rng()
