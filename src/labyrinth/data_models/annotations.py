@@ -10,6 +10,14 @@ from labyrinth.data_models.bounding_boxes import BoundingBox
 
 
 class Annotation(Protocol):
+    id: UUID4 | int = Field(default_factory=uuid4)
+    image_id: UUID4 | int
+    category_id: UUID4 | int
+    counts: List[int]
+    size: tuple[int, int]
+    area: int
+    bbox: BoundingBox
+
     @classmethod
     def from_pycoco(cls, annotation: Any, bbcls: BoundingBox) -> Self: ...
 

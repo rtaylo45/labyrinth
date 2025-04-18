@@ -4,11 +4,11 @@
 import numpy as np
 from pycocotools.mask import decode, frPyObjects
 
-from labyrinth.data_models.annotations import SegmentationRLE
+from labyrinth.data_models.annotations import Annotation
 from labyrinth.types import Array, HWCImage
 
 
-def sprite_read(annotation: SegmentationRLE) -> Array:
+def sprite_read(annotation: Annotation) -> Array:
     """Converts the pydantic Annotation to a binary numpy array sprite.
 
     Args:

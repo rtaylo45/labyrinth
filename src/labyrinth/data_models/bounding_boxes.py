@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 # Vidrovr Inc.
 
-from typing import List, Protocol, Self, Sequence, Tuple
+from typing import Any, List, Protocol, Self, Sequence, Tuple
 
 import numpy as np
 from pydantic import BaseModel
@@ -12,7 +12,7 @@ class BoundingBox(Protocol):
     def from_list(cls, bbox: List[float]) -> Self: ...
 
     @classmethod
-    def from_dict(cls, dict_: dict) -> Self: ...
+    def from_dict(cls, bbox: dict[Any, Any]) -> Self: ...
 
     def to_xyxy_list(self) -> Tuple[int, int, int, int]: ...
 
