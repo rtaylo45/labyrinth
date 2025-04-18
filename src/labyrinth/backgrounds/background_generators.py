@@ -1,6 +1,7 @@
 #!/usr/bin/env python
 # By: Zack Taylor
 
+import os
 from glob import glob
 
 import numpy as np
@@ -63,8 +64,14 @@ class FolderBackgroundGenerator:
         number_of_samples: int | None = None,
         glob_expression: str | None = None,
     ):
+        if not os.path.exists(image_folder):
+            raise ValueError(f"Path ({image_folder}) does not exists.")
+
         expression = glob_expression if glob_expression is not None else "*"
         files = glob(f"{image_folder}/{expression}")
+
+        if len(files) == 0:
+            raise ValueError(f"No files found in folder. {image_folder}/{expression}")
 
         if number_of_samples is not None:
             files = list(rng.choice(files, size=number_of_samples))
