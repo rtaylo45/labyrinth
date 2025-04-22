@@ -1,7 +1,11 @@
 #!/usr/bin/env python
 # By: Zack Taylor
 
+import os
+from glob import glob
+
 import numpy as np
+from PIL import Image
 
 from labyrinth.backgrounds.protocol import ColorGenerator
 from labyrinth.types import Array
@@ -49,3 +53,37 @@ class SolidBackgroundGenerator:
         array = np.stack(channels, axis=-1, dtype=np.uint8)
 
         return array
+
+
+class FolderBackgroundGenerator:
+    _files: list[str]
+
+    def __init__(
+        self,
+        image_folder: str,
+        number_of_samples: int | None = None,
+        glob_expression: str | None = None,
+    ):
+        if not os.path.exists(image_folder):
+            raise ValueError(f"Path ({image_folder}) does not exists.")
+
+        expression = glob_expression if glob_expression is not None else "*"
+        files = glob(f"{image_folder}/{expression}")
+
+        if len(files) == 0:
+            raise ValueError(f"No files found in folder. {image_folder}/{expression}")
+
+        if number_of_samples is not None:
+            files = list(rng.choice(files, size=number_of_samples))
+
+        self._files = files
+
+    def __call__(
+        self,
+    ) -> Array:
+        file = rng.choice(self._files)
+
+        img = Image.open(file)
+        img = img.convert("RGB")
+
+        return np.array(img, dtype=np.uint8)
