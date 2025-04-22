@@ -14,7 +14,12 @@ from uuid import uuid4
 from PIL import Image
 
 from labyrinth.augmentations import DummyAugment
-from labyrinth.backgrounds import RGBAColorGenerator, SolidBackgroundGenerator
+from labyrinth.backgrounds import (
+    BackgroundGenerator,
+    FolderBackgroundGenerator,
+    RGBAColorGenerator,
+    SolidBackgroundGenerator,
+)
 
 # Internal libraries
 from labyrinth.data_models.annotations import SegmentationRLE
@@ -26,6 +31,34 @@ from labyrinth.utils.loaders import coco_loader
 
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger("labyrinth")
+
+
+def get_background_generator(name: str) -> BackgroundGenerator:
+    background_gen = None
+    if name == "folder":
+        background_gen = FolderBackgroundGenerator(
+            "/shared_data/oidv7/train", glob_expression="*.jpg"
+        )
+
+    elif name == "random":
+        color_gen = RGBAColorGenerator(
+            color_min=0,
+            color_max=255,
+            alpha_min=255,
+            alpha_max=255,
+        )
+
+        background_gen = SolidBackgroundGenerator(
+            color_generator=color_gen,
+            height_min=2160 // 2,
+            height_max=2160,
+            width_min=3840 // 2,
+            width_max=3840,
+        )
+    else:
+        raise ValueError(f"Invalid background generator name {name}")
+
+    return background_gen
 
 
 def normalize_bbox(bbox, image_array) -> CENTER_XYWH:
@@ -162,6 +195,7 @@ def main(
     output_dir: str,
     import_folder: str,
     min_samples_per_label: int,
+    background_name: str = "random",
 ) -> None:
     """Generates the dataset.
 
@@ -169,6 +203,7 @@ def main(
         output_dir: Directory to place the generated dataset
         import_folder: Directory with original dataset/mask
         min_samples_per_label: The min number of samples per label
+        background_name: Type of background generator you want to use
     """
     # Gobble up all those annotation files
     annotations_folder = f"{import_folder}/annotations"
@@ -184,20 +219,7 @@ def main(
     ]
 
     # Objects
-    color_gen = RGBAColorGenerator(
-        color_min=0,
-        color_max=255,
-        alpha_min=255,
-        alpha_max=255,
-    )
-
-    background_gen = SolidBackgroundGenerator(
-        color_generator=color_gen,
-        height_min=2160 // 2,
-        height_max=2160,
-        width_min=3840 // 2,
-        width_max=3840,
-    )
+    background_gen = get_background_generator(background_name)
     mask_samplers = [
         COCOSpriteSampler(coco, import_folder, max_num_sprites=4) for coco in cocos
     ]
