@@ -41,7 +41,7 @@ class GenerateSample:
             labels: list of labels for each mask
             bboxs: list of bounding boxes for each mask
         """
-        # Generate background and transpose it to flip width and height
+        # Generate background
         background_array = self._background_generator()
 
         # Sample masks and labels
