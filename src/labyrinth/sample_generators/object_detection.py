@@ -3,8 +3,6 @@
 
 from typing import Tuple
 
-import numpy as np
-
 from labyrinth.augmentations import ImageAugmentation
 from labyrinth.backgrounds import BackgroundGenerator
 from labyrinth.data_models.bounding_boxes import BoundingBox
@@ -45,7 +43,6 @@ class GenerateSample:
         """
         # Generate background and transpose it to flip width and height
         background_array = self._background_generator()
-        background_array = np.transpose(background_array, [1, 0, 2])
 
         # Sample masks and labels
         mask_arrays, labels = self._sprite_sampler(label_id=label_id)
