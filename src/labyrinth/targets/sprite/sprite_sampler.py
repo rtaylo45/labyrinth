@@ -3,7 +3,7 @@
 
 import os
 from glob import glob
-from typing import List, Tuple
+from typing import Dict, List, Sequence, Tuple
 
 import numpy as np
 from PIL import Image
@@ -19,7 +19,7 @@ class COCOSpriteSampler:
     _coco: COCO | None
     _import_folder: str | None
     _max_num_sprites: int
-    _mask_files: dict[int, List[str]]
+    _mask_files: Dict[int, List[str]]
 
     def __init__(
         self,
@@ -55,7 +55,7 @@ class COCOSpriteSampler:
         else:
             raise TypeError("Unsupported operation.")
 
-    def _get_sprite_files(self) -> dict[int, list[str]]:
+    def _get_sprite_files(self) -> Dict[int, List[str]]:
         assert self._coco is not None
 
         anno_image_folder = (
@@ -98,7 +98,7 @@ class COCOSpriteSampler:
     def _get_label_id(self, file_name: str) -> int:
         return self._get_id(file_name, keyword="labelid")
 
-    def _sample_files(self, label_id: int | None = None) -> list[str]:
+    def _sample_files(self, label_id: int | None = None) -> List[str]:
         if label_id is not None:
             file_range = self._mask_files[label_id]
             num_mask = (
@@ -136,3 +136,79 @@ class COCOSpriteSampler:
         mask_arrays = [self._read_sprite(file_name) for file_name in mask_files]
 
         return mask_arrays, labels
+
+
+class FolderSpriteSampler:
+    _folder: List[str]
+    _label: List[int]
+    _max_num_sprites: int
+    _sprite_files: Dict[int, List[str]]
+
+    def __init__(
+        self,
+        folder: str | Sequence[str],
+        label: int | Sequence[int],
+        max_num_sprite: int,
+        number_of_samples: int | None = None,
+        glob_expression: str | None = None,
+    ):
+        if (isinstance(folder, str)) and (isinstance(label, int)):
+            self._label = [label]
+            self._folder = [folder]
+
+        elif (isinstance(folder, Sequence)) and (isinstance(label, Sequence)):
+            if len(folder) != len(label):
+                raise ValueError("Size of folder does not equal size of label")
+
+            self._label = [lab for lab in label]
+
+            self._folder = []
+            for f in folder:
+                if not os.path.exists(f):
+                    raise ValueError(f"Path ({f}) does not exists.")
+                self._folder.append(f)
+
+        else:
+            raise ValueError(
+                "Folder and label must both either be str/int or sequence str/int"
+            )
+
+        self._load_sprite_files(number_of_samples, glob_expression)
+
+    def _load_sprite_files(
+        self, number_of_samples: int | None, glob_expression: str | None
+    ):
+        expression = glob_expression if glob_expression is not None else "*"
+
+        sprite_files = {}
+        for id, f in zip(self._label, self._folder):
+            files = glob(f"{f}/{expression}")
+            if len(files) == 0:
+                raise ValueError(f"No files found in folder. {f}/{expression}")
+
+            if sprite_files.get(id) is None:
+                sprite_files[id] = [*files]
+            else:
+                sprite_files[id].append(*files)
+
+        if number_of_samples is not None:
+            for label, files in sprite_files.items():
+                files = list(rng.choice(files, size=number_of_samples))
+                sprite_files[label] = files
+
+        self._sprite_files = sprite_files
+
+    def _sample_files(self, label_id: int | None = None) -> Tuple[List[str], List[int]]:
+        return [""], [0]
+
+    def _read_sprite(self, file: str) -> Array:
+        return np.array(Image.open(file), dtype=np.uint8)
+
+    def __call__(
+        self,
+        label_id: int | None = None,
+    ) -> Tuple[List[Array], List[int]]:
+        files, labels = self._sample_files(label_id=label_id)
+        arrays = [self._read_sprite(file) for file in files]
+
+        return arrays, labels
