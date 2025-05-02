@@ -15,19 +15,25 @@ class GenerateSample:
     _background_generator: BackgroundGenerator
     _sprite_sampler: SpriteSampler
     _sprite_placer: SpritePlacer
-    _augment: ImageAugmentation | None
+    _sprite_augment: ImageAugmentation | None
+    _background_augment: ImageAugmentation | None
+    _sample_augment: ImageAugmentation | None
 
     def __init__(
         self,
         background_generator: BackgroundGenerator,
         sprite_sampler: SpriteSampler,
         sprite_placer: SpritePlacer,
-        augment: ImageAugmentation | None = None,
+        sprite_augment: ImageAugmentation | None = None,
+        background_augment: ImageAugmentation | None = None,
+        sample_augment: ImageAugmentation | None = None,
     ) -> None:
         self._background_generator = background_generator
         self._sprite_sampler = sprite_sampler
         self._sprite_placer = sprite_placer
-        self._augment = augment
+        self._sprite_augment = sprite_augment
+        self._background_augment = background_augment
+        self._sample_augment = sample_augment
 
     def __call__(
         self,
@@ -44,12 +50,18 @@ class GenerateSample:
         # Generate background
         background_array = self._background_generator()
 
+        # Augment background
+        if self._background_augment:
+            background_array = self._background_augment(background_array)
+
         # Sample masks and labels
         mask_arrays, labels = self._sprite_sampler(label_id=label_id)
 
         # Augment the mask
-        if self._augment:
-            mask_arrays = [self._augment(mask_array) for mask_array in mask_arrays]
+        if self._sprite_augment:
+            mask_arrays = [
+                self._sprite_augment(mask_array) for mask_array in mask_arrays
+            ]
 
         # Place the masks and get the image and bounding boxes
         if timeout is not None:
@@ -58,5 +70,9 @@ class GenerateSample:
             )
         else:
             placed, bboxs = self._sprite_placer(mask_arrays, background_array)
+
+        # Augment the full sample image (background + mask) PIXEL LEVEL AUGMENTATIONS ONLY.. for now
+        if self._sample_augment:
+            placed = self._sample_augment(placed)
 
         return placed, labels, bboxs
