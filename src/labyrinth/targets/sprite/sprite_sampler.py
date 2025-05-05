@@ -3,7 +3,7 @@
 
 import os
 from glob import glob
-from typing import List, Tuple
+from typing import Dict, List, Sequence, Tuple
 
 import numpy as np
 from PIL import Image
@@ -19,7 +19,7 @@ class COCOSpriteSampler:
     _coco: COCO | None
     _import_folder: str | None
     _max_num_sprites: int
-    _mask_files: dict[int, List[str]]
+    _mask_files: Dict[int, List[str]]
 
     def __init__(
         self,
@@ -55,7 +55,7 @@ class COCOSpriteSampler:
         else:
             raise TypeError("Unsupported operation.")
 
-    def _get_sprite_files(self) -> dict[int, list[str]]:
+    def _get_sprite_files(self) -> Dict[int, List[str]]:
         assert self._coco is not None
 
         anno_image_folder = (
@@ -98,7 +98,7 @@ class COCOSpriteSampler:
     def _get_label_id(self, file_name: str) -> int:
         return self._get_id(file_name, keyword="labelid")
 
-    def _sample_files(self, label_id: int | None = None) -> list[str]:
+    def _sample_files(self, label_id: int | None = None) -> List[str]:
         if label_id is not None:
             file_range = self._mask_files[label_id]
             num_mask = (
@@ -136,3 +136,108 @@ class COCOSpriteSampler:
         mask_arrays = [self._read_sprite(file_name) for file_name in mask_files]
 
         return mask_arrays, labels
+
+
+class FolderSpriteSampler:
+    _folder: List[str]
+    _max_num_sprites: int
+    _sprite_files: Dict[int, List[str]]
+
+    def __init__(
+        self,
+        folder: str | Sequence[str],
+        max_num_sprites: int = 1,
+        glob_expression: str | None = None,
+    ):
+        if isinstance(folder, str):
+            self._folder = [folder]
+
+        elif isinstance(folder, Sequence):
+            self._folder = []
+            for f in folder:
+                if not os.path.exists(f):
+                    raise ValueError(f"Path ({f}) does not exists.")
+                self._folder.append(f)
+
+        self._sprite_files = self._get_sprite_files(glob_expression)
+        self._max_num_sprites = max_num_sprites
+
+    def _get_id(self, file_name: str, keyword: str) -> int:
+        base = os.path.basename(file_name)
+        split = base.split("_")
+
+        i = -1
+        for i, s in enumerate(split):
+            if s == keyword:
+                break
+
+        if i == (len(split) - 1):
+            raise ValueError("No {keyword} found.")
+
+        id = int(split[i + 1])
+
+        return id
+
+    def _get_label_id(self, file_name: str) -> int:
+        return self._get_id(file_name, keyword="labelid")
+
+    def _get_sprite_files(
+        self,
+        glob_expression: str | None = None,
+    ):
+        expression = glob_expression if glob_expression is not None else "*_mask.png"
+
+        sprite_files = {}
+        for folder in self._folder:
+            files = glob(f"{folder}/{expression}")
+            if len(files) == 0:
+                raise ValueError(f"No files found in folder. {folder}/{expression}")
+
+            file_to_id = {file: self._get_label_id(file) for file in files}
+
+            for file, id in file_to_id.items():
+                if sprite_files.get(id) is None:
+                    sprite_files[id] = [file]
+                else:
+                    sprite_files[id].append(file)
+
+        return sprite_files
+
+    def _sample_files(self, label_id: int | None = None) -> List[str]:
+        if label_id is not None:
+            file_range = self._sprite_files[label_id]
+            num_mask = (
+                rng.integers(low=1, high=self._max_num_sprites)
+                if self._max_num_sprites != 1
+                else 1
+            )
+
+            files = list(rng.choice(file_range, size=num_mask))
+        else:
+            label_range = list(self._sprite_files.keys())
+            num_mask = (
+                rng.integers(low=1, high=self._max_num_sprites)
+                if self._max_num_sprites != 1
+                else 1
+            )
+            labels = list(rng.choice(label_range, size=num_mask))
+
+            files = []
+            for label in labels:
+                mask_range = self._sprite_files[label]
+                files.append(rng.choice(mask_range))
+
+        return files
+
+    def _read_sprite(self, file: str) -> Array:
+        return np.array(Image.open(file), dtype=np.uint8)
+
+    def __call__(
+        self,
+        label_id: int | None = None,
+    ) -> Tuple[List[Array], List[int]]:
+        files = self._sample_files(label_id=label_id)
+        labels = [self._get_label_id(file_name) for file_name in files]
+        arrays = [self._read_sprite(file) for file in files]
+
+        return arrays, labels
