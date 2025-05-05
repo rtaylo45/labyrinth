@@ -169,7 +169,7 @@ def get_sprite_augmentation() -> A.Compose:
         [
             A.RandomScale(scale_limit=(-0.99, -0.4), p=1.0),
             A.HorizontalFlip(p=0.2),
-            A.Rotate(limit=180, p=0.8),
+            A.SafeRotate(limit=180, p=0.8),
             A.RandomBrightnessContrast(p=0.2),
             A.GaussianBlur(p=0.2),
         ]
