@@ -1,16 +1,11 @@
 #!/usr/bin/env python
-# -*- coding: utf-8 -*-
-#
 # Vidrovr Inc.
-# By: Zack Taylor
 
-# Standard libraries
 import logging
 import os
 from glob import glob
 from uuid import uuid4
 
-# External libraries
 from PIL import Image
 
 from labyrinth.augmentations import DummyAugment
@@ -20,8 +15,6 @@ from labyrinth.backgrounds import (
     RGBAColorGenerator,
     SolidBackgroundGenerator,
 )
-
-# Internal libraries
 from labyrinth.data_models.annotations import SegmentationRLE
 from labyrinth.data_models.bounding_boxes import CENTER_XYWH, XYWH
 from labyrinth.sample_generators.object_detection import GenerateSample
