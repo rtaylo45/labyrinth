@@ -193,9 +193,9 @@ class FolderSpriteSampler:
             if len(files) == 0:
                 raise ValueError(f"No files found in folder. {folder}/{expression}")
 
-            id_to_file = {self._get_label_id(file): file for file in files}
+            file_to_id = {file: self._get_label_id(file) for file in files}
 
-            for id, file in id_to_file.items():
+            for file, id in file_to_id.items():
                 if sprite_files.get(id) is None:
                     sprite_files[id] = [file]
                 else:
