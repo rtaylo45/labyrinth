@@ -5,9 +5,10 @@ import logging
 import os
 from uuid import uuid4
 
+import albumentations as A
 from PIL import Image
 
-from labyrinth.augmentations import DummyAugment
+from labyrinth.augmentations import AlbumAugmentation
 from labyrinth.backgrounds import (
     BackgroundGenerator,
     FolderBackgroundGenerator,
@@ -163,6 +164,19 @@ def generate_samples(
                 continue
 
 
+def get_sprite_augmentation() -> A.Compose:
+    pipeline = A.Compose(
+        [
+            A.RandomScale(scale_limit=(-0.90, -0.4), p=1.0),
+            A.SafeRotate(limit=180, p=0.9),
+            A.HorizontalFlip(p=0.2),
+            A.GaussianBlur(p=0.2),
+        ]
+    )
+
+    return pipeline
+
+
 def main(
     output_dir: str,
     mask_folder: str,
@@ -184,13 +198,14 @@ def main(
     background_gen = get_background_generator(background_name)
     mask_sampler = FolderSpriteSampler(mask_folder, max_num_sprites=10)
     mask_placer = UniformSpritePlacer(bbox_cls=XYWH)  # type: ignore
-    augment = DummyAugment()
+    sprite_aug_pipeline = get_sprite_augmentation()
+    sprite_augment = AlbumAugmentation(sprite_aug_pipeline)
 
     sample_gen = GenerateSample(
         background_generator=background_gen,
         sprite_sampler=mask_sampler,
         sprite_placer=mask_placer,
-        augment=augment,
+        sprite_augment=sprite_augment,
     )
 
     # Generate the samples
