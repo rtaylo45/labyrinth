@@ -6,9 +6,10 @@ import os
 from glob import glob
 from uuid import uuid4
 
+import albumentations as A
 from PIL import Image
 
-from labyrinth.augmentations import DummyAugment
+from labyrinth.augmentations import AlbumAugmentation
 from labyrinth.backgrounds import (
     BackgroundGenerator,
     FolderBackgroundGenerator,
@@ -130,6 +131,19 @@ def dump_cats(categories, output_dir) -> None:
     return None
 
 
+def get_sprite_augmentation() -> A.Compose:
+    pipeline = A.Compose(
+        [
+            A.RandomScale(scale_limit=(-0.2, 0.2), p=0.5),
+            A.SafeRotate(limit=90, p=0.5),
+            A.HorizontalFlip(p=0.5),
+            A.GaussianBlur(p=0.2),
+        ]
+    )
+
+    return pipeline
+
+
 def generate_samples(
     sample_gen,
     samples_per_cat,
@@ -218,13 +232,14 @@ def main(
     ]
     mask_sampler = sum(mask_samplers[1:], mask_samplers[0])
     mask_placer = UniformSpritePlacer(bbox_cls=XYWH)  # type: ignore
-    augment = DummyAugment()
+    sprite_aug_pipeline = get_sprite_augmentation()
+    sprite_augment = AlbumAugmentation(sprite_aug_pipeline)
 
     sample_gen = GenerateSample(
         background_generator=background_gen,
         sprite_sampler=mask_sampler,
         sprite_placer=mask_placer,
-        augment=augment,
+        sprite_augment=sprite_augment,
     )
 
     categories = cocos[0].categories
