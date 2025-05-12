@@ -6,6 +6,7 @@ from typing import Tuple
 from labyrinth.augmentations import ImageAugmentation
 from labyrinth.backgrounds import BackgroundGenerator
 from labyrinth.data_models.bounding_boxes import BoundingBox
+from labyrinth.modifiers import MaskBackgroundModifier
 from labyrinth.targets.sprite import SpritePlacer, SpriteSampler
 from labyrinth.types import Array
 from labyrinth.utils import with_timeout
@@ -18,6 +19,7 @@ class GenerateSample:
     _sprite_augment: ImageAugmentation | None
     _background_augment: ImageAugmentation | None
     _sample_augment: ImageAugmentation | None
+    _mask_background_modifier: MaskBackgroundModifier | None
 
     def __init__(
         self,
@@ -27,6 +29,7 @@ class GenerateSample:
         sprite_augment: ImageAugmentation | None = None,
         background_augment: ImageAugmentation | None = None,
         sample_augment: ImageAugmentation | None = None,
+        mask_background_modifier: MaskBackgroundModifier | None = None,
     ) -> None:
         self._background_generator = background_generator
         self._sprite_sampler = sprite_sampler
@@ -34,6 +37,7 @@ class GenerateSample:
         self._sprite_augment = sprite_augment
         self._background_augment = background_augment
         self._sample_augment = sample_augment
+        self._mask_background_modifier = mask_background_modifier
 
     def __call__(
         self,
@@ -62,6 +66,12 @@ class GenerateSample:
             mask_arrays = [
                 self._sprite_augment(mask_array) for mask_array in mask_arrays
             ]
+
+        # Modify mask/backgrounds dependently
+        if self._mask_background_modifier:
+            mask_arrays, background_array = self._mask_background_modifier(
+                mask_arrays, background_array
+            )
 
         # Place the masks and get the image and bounding boxes
         if timeout is not None:
