@@ -13,8 +13,8 @@ class FourierDomainAdaptation:
 
     def __init__(
         self,
-        beta_limit=(0, 0.1),
-        p=1.0,
+        beta_limit: Tuple[float, float] = (0, 0.1),
+        p: float = 1.0,
     ) -> None:
         self._fda = A.FDA(
             beta_limit=beta_limit,
@@ -49,6 +49,31 @@ class FourierDomainAdaptation:
         # Apply transform on background array using the list of mask arrays as the
         # target domain. Interally Albumentations randomly picks one of these.
         transformed = self._fda(image=background_array, target_domain=resized_masks)
+        trans_img = transformed["image"]
+
+        return mask_arrays, trans_img
+
+
+class HistogramMatching:
+    _hist: A.ImageOnlyTransform
+
+    def __init__(
+        self,
+        blend_ratio: Tuple[float, float] = (0.5, 1.0),
+        p: float = 1.0,
+    ) -> None:
+        self._hist = A.HistogramMatching(
+            blend_ratio=blend_ratio,
+            p=p,
+            metadata_key="target_domain",
+        )
+
+    def __call__(
+        self,
+        mask_arrays: List[Array],
+        background_array: Array,
+    ) -> Tuple[List[Array], Array]:
+        transformed = self._hist(image=background_array, target_domain=mask_arrays)
         trans_img = transformed["image"]
 
         return mask_arrays, trans_img
