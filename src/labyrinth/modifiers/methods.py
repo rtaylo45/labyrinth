@@ -66,6 +66,7 @@ class HistogramMatching:
             blend_ratio=blend_ratio,
             p=p,
             metadata_key="target_domain",
+            read_fn=lambda x: x,
         )
 
     def __call__(
