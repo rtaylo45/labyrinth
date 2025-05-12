@@ -8,6 +8,23 @@ import albumentations as A
 from labyrinth.types import Array
 
 
+class AlbumMaskBackgroundModifier:
+    _pipeline: A.Compose
+
+    def __init__(self, pipeline: A.Compose) -> None:
+        self._pipeline = pipeline
+
+    def __call__(
+        self,
+        mask_arrays: List[Array],
+        background_array: Array,
+    ) -> Tuple[List[Array], Array]:
+        transformed = self._pipeline(image=background_array, target_domain=mask_arrays)
+        trans_img = transformed["image"]
+
+        return mask_arrays, trans_img
+
+
 class FourierDomainAdaptation:
     _fda: A.ImageOnlyTransform
 
@@ -31,7 +48,7 @@ class FourierDomainAdaptation:
     ) -> List[Array]:
         T = A.Resize(height=height, width=width)
 
-        transformed = [T(image_array)["image"] for image_array in mask_arrays]
+        transformed = [T(image=image_array)["image"] for image_array in mask_arrays]
 
         return transformed
 
