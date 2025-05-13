@@ -186,7 +186,7 @@ def _run_convergence(min_: int, max_: int, image: Array, direction: str) -> int 
     return guess
 
 
-def min_max_search(image: Array) -> Sequence:
+def _min_max_search(image: Array) -> Sequence:
     alpha = image[:, :, 3]
     height, width = alpha.shape
 
@@ -228,7 +228,7 @@ def bbox_squeeze(image: Array) -> Array:
     Returns:
         reduced_image: Numpy image array of the mask reduced to its smallest size.
     """
-    idxs = min_max_search(image)
+    idxs = _min_max_search(image)
     reduced_image = image[idxs]
 
     return reduced_image
