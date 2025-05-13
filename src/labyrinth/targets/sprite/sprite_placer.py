@@ -8,7 +8,7 @@ import numpy as np
 from labyrinth.data_models.bounding_boxes import BoundingBox
 from labyrinth.types import HWCImage
 from labyrinth.utils.general import calculate_iou
-from labyrinth.utils.sprite import place_sprite
+from labyrinth.utils.sprite import bbox_squeeze, place_sprite
 
 rng = np.random.default_rng()
 
@@ -83,6 +83,7 @@ class UniformSpritePlacer:
             box_clash = True
             x_start, y_start = 0, 0
             xywh = None
+            mask_array = bbox_squeeze(mask_array)
             while box_clash:
                 x_max = (
                     self._x_max
