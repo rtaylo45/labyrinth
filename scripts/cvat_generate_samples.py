@@ -8,6 +8,7 @@ from uuid import uuid4
 
 import albumentations as A
 from PIL import Image
+from tqdm import tqdm
 
 from labyrinth.augmentations import AlbumAugmentation
 from labyrinth.backgrounds import (
@@ -183,47 +184,52 @@ def generate_samples(
     cat_counts = {category.id - 1: 0 for category in categories}
     activate_samples = 0
 
-    logger.info(f"Generate samples: {total_samples}")
+    with tqdm(total=total_samples) as pbar:
+        pbar.set_description(f"Generating {total_samples} samples.")
+        # Initial loop to generate samples
+        while activate_samples < total_samples:
+            # Do the damn thing
+            try:
+                placed, labels, bboxs = sample_gen(timeout=2)
+                bboxs = [bbox.to_cxywh() for bbox in bboxs]
+                labels = [label - 1 for label in labels]
+                bboxs = [normalize_bbox(bbox, placed) for bbox in bboxs]
 
-    # Initial loop to generate samples
-    while activate_samples < total_samples:
-        # Do the damn thing
-        try:
-            placed, labels, bboxs = sample_gen(timeout=2)
-            bboxs = [bbox.to_cxywh() for bbox in bboxs]
-            labels = [label - 1 for label in labels]
-            bboxs = [normalize_bbox(bbox, placed) for bbox in bboxs]
+                save_result(placed, labels, bboxs, output_dir)
 
-            save_result(placed, labels, bboxs, output_dir)
+                for label in labels:
+                    cat_counts[label] += 1
 
-            for label in labels:
-                cat_counts[label] += 1
+                activate_samples += 1
+                pbar.update(1)
+            except TimeoutException:
+                continue
 
-            activate_samples += 1
-        except TimeoutException:
-            continue
-
+    logger.info("Checking samples")
     # More of a manual loop to make sure we get enough examples of each label type
     for name, _ in cat_counts.items():
         num_samples = cat_counts[name]
         num_mask = mask_cat_counts[name]
 
         if num_mask > 0:
-            while num_samples < samples_per_cat:
-                try:
-                    placed, labels, bboxs = sample_gen(timeout=2, label_id=name)
-                    bboxs = [bbox.to_cxywh() for bbox in bboxs]
-                    labels = [label - 1 for label in labels]
-                    bboxs = [normalize_bbox(bbox, placed) for bbox in bboxs]
+            with tqdm(total=(samples_per_cat - num_samples)) as pbar:
+                pbar.set_description(f"Checking category {name}")
+                while num_samples < samples_per_cat:
+                    try:
+                        placed, labels, bboxs = sample_gen(timeout=2, label_id=name)
+                        bboxs = [bbox.to_cxywh() for bbox in bboxs]
+                        labels = [label - 1 for label in labels]
+                        bboxs = [normalize_bbox(bbox, placed) for bbox in bboxs]
 
-                    save_result(placed, labels, bboxs, output_dir)
+                        save_result(placed, labels, bboxs, output_dir)
 
-                    for label in labels:
-                        cat_counts[label] += 1
+                        for label in labels:
+                            cat_counts[label] += 1
 
-                    num_samples += 1
-                except TimeoutException:
-                    continue
+                        num_samples += 1
+                        pbar.update(1)
+                    except TimeoutException:
+                        continue
 
 
 def main(
