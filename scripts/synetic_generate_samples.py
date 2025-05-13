@@ -16,6 +16,7 @@ from labyrinth.backgrounds import (
     SolidBackgroundGenerator,
 )
 from labyrinth.data_models.bounding_boxes import CENTER_XYWH, XYWH
+from labyrinth.modifiers import AlbumMaskBackgroundModifier
 from labyrinth.sample_generators.object_detection import GenerateSample
 from labyrinth.targets.sprite import FolderSpriteSampler, UniformSpritePlacer
 from labyrinth.utils.exceptions import TimeoutException
@@ -167,10 +168,37 @@ def generate_samples(
 def get_sprite_augmentation() -> A.Compose:
     pipeline = A.Compose(
         [
-            A.RandomScale(scale_limit=(-0.90, -0.4), p=1.0),
+            A.RandomScale(scale_limit=(-0.9, -0.4), p=1.0),
             A.SafeRotate(limit=180, p=0.9),
             A.HorizontalFlip(p=0.5),
             A.GaussianBlur(p=0.2),
+            A.Downscale(p=0.2),
+            A.CoarseDropout(
+                num_holes_range=(2, 5),
+                hole_height_range=(20, 90),
+                hole_width_range=(20, 90),
+                fill=(0, 0, 0, 0),
+                p=0.2,
+            ),
+        ]
+    )
+
+    return pipeline
+
+
+def get_background_augmentation() -> A.Compose:
+    pipeline = A.Compose(
+        [
+            A.HistogramMatching(
+                read_fn=lambda x: x,
+                metadata_key="target_domain",
+                p=1.0,
+            ),
+            A.FDA(
+                read_fn=lambda x: x,
+                metadata_key="target_domain",
+                p=0.8,
+            ),
         ]
     )
 
@@ -200,12 +228,15 @@ def main(
     mask_placer = UniformSpritePlacer(bbox_cls=XYWH)  # type: ignore
     sprite_aug_pipeline = get_sprite_augmentation()
     sprite_augment = AlbumAugmentation(sprite_aug_pipeline)
+    background_aug_pipeline = get_background_augmentation()
+    mask_background_mod = AlbumMaskBackgroundModifier(background_aug_pipeline)
 
     sample_gen = GenerateSample(
         background_generator=background_gen,
         sprite_sampler=mask_sampler,
         sprite_placer=mask_placer,
         sprite_augment=sprite_augment,
+        mask_background_modifier=mask_background_mod,
     )
 
     # Generate the samples
