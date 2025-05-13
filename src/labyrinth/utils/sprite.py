@@ -213,7 +213,7 @@ def min_max_search(image: Array) -> Sequence:
     return np.s_[ymin:ymax, xmin:xmax, ...]
 
 
-def bbox_squeeze(image: Array):
+def bbox_squeeze(image: Array) -> Array:
     """Reduces the image size to the smallest width/height which encloses the alpha layer.
 
     During sprite augmentation, it is possible to artifically increase the size of the sprite
