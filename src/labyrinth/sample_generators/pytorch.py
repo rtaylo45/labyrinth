@@ -84,7 +84,7 @@ class LabyObjectSet(Dataset):
 
         # Adding this part because of typing but should never happen
         if (image is None) or (labels is None) or (xywh_bboxs is None):
-            raise SystemError("Hellow super user! You have fucked up")
+            raise SystemError("Hello super user! You have fucked up")
 
         h, w, _ = image.shape
         raw_bboxs = [[b.x, b.y, b.width, b.height] for b in xywh_bboxs]  # type: ignore
