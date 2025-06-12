@@ -20,12 +20,11 @@ dependencies = [
     "tqdm>=4.67.1"
 ]
 
-[dependency-groups]
-
-torch = [
+[project.optional-dependencies]
+torch-cpu = [
     "torch>=2.7.0",
+    "torchvision>=0.22.1",
 ]
-
 dev = [
     "pytest>=8.3.5",
 ]
