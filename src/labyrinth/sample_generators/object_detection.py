@@ -46,6 +46,10 @@ class GenerateSample:
     ) -> Tuple[Array, list[int], list[BoundingBox]]:
         """Return an object detection training sample.
 
+        Args:
+            label_id: ID for the specific sprite label you want.
+            timeout: Max amount of time you want to spend generating the sample.
+
         Returns:
             image: Sample image with background and sprites
             labels: list of labels for each mask

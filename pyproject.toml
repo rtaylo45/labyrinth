@@ -17,10 +17,17 @@ dependencies = [
     "pillow>=11.2.1",
     "pycocotools>=2.0.8",
     "pydantic>=2.11.3",
-    "pytest>=8.3.5",
     "tqdm>=4.67.1"
 ]
 
+[project.optional-dependencies]
+torch-cpu = [
+    "torch>=2.7.0",
+    "torchvision>=0.22.1",
+]
+dev = [
+    "pytest>=8.3.5",
+]
 
 [tool.pyright]
 include = ["src", "tests"]
