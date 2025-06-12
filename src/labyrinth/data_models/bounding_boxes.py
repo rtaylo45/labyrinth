@@ -38,7 +38,7 @@ class CENTER_XYWH(BaseModel):
     height: float
 
 
-class XYWH(BoundingBox, BaseModel):
+class XYWH(BaseModel):
     """Defines a bounding box with x, y top left and width and height."""
 
     x: float
