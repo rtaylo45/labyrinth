@@ -2,12 +2,12 @@
 # Vidrovr Inc.
 
 from collections.abc import Callable
-from typing import List, Tuple
+from typing import Annotated, List, Tuple
 
 import numpy as np
 
 from labyrinth.data_models.bounding_boxes import BoundingBox
-from labyrinth.types import HWCImage
+from labyrinth.types import FloatRange, HWCImage
 from labyrinth.utils.general import calculate_iou
 from labyrinth.utils.sprite import bbox_squeeze, place_sprite
 
@@ -20,7 +20,7 @@ class UniformSpritePlacer:
     _y_min: int | None
     _x_max: int | None
     _y_max: int | None
-    _alpha_blend: Callable[[], float] | None
+    _alpha_blend: Callable[[], Annotated[float, FloatRange(0.0, 1.0)]] | None
 
     def __init__(
         self,
@@ -117,6 +117,7 @@ class UniformSpritePlacer:
 
             # Place the mask and save bbox
             blend_value = self._alpha_blend() if self._alpha_blend is not None else 1.0
+            print("alpha", blend_value)
             placed = place_sprite(
                 x_start, y_start, placed, mask_array, alpha_blend=blend_value
             )

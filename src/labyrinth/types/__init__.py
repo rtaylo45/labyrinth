@@ -1,5 +1,6 @@
 from labyrinth.types.array import Array, ScalarType, Shape
 from labyrinth.types.images import CHWImage, HWCImage
+from labyrinth.types.ranges import FloatRange
 from labyrinth.types.samples import Sample
 
 __all__ = (
@@ -9,4 +10,5 @@ __all__ = (
     "HWCImage",
     "CHWImage",
     "Sample",
+    "FloatRange",
 )
