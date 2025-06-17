@@ -1,13 +1,13 @@
 #!/usr/bin/env python
 # Vidrovr Inc.
 
-from typing import Sequence
+from typing import Annotated, Sequence
 
 import numpy as np
 from pycocotools.mask import decode, frPyObjects
 
 from labyrinth.data_models.annotations import Annotation
-from labyrinth.types import Array, HWCImage
+from labyrinth.types import Array, FloatRange, HWCImage
 
 
 def sprite_read(annotation: Annotation) -> Array:
@@ -64,7 +64,7 @@ def place_sprite(
     y_min: int,
     background_array: HWCImage[np.uint8],
     sprite_array: HWCImage[np.uint8],
-    alpha_blend: float = 1.0,
+    alpha_blend: Annotated[float, FloatRange(0.0, 1.0)] = 1.0,
 ) -> Array:
     """Places the sprite in the background.
 
