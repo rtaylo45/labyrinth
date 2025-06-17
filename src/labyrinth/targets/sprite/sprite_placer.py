@@ -117,7 +117,6 @@ class UniformSpritePlacer:
 
             # Place the mask and save bbox
             blend_value = self._alpha_blend() if self._alpha_blend is not None else 1.0
-            print("alpha", blend_value)
             placed = place_sprite(
                 x_start, y_start, placed, mask_array, alpha_blend=blend_value
             )
