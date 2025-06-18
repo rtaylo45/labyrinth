@@ -1,13 +1,13 @@
 #!/usr/bin/env python
 # Vidrovr Inc.
 
-from typing import Sequence
+from typing import Annotated, Sequence
 
 import numpy as np
 from pycocotools.mask import decode, frPyObjects
 
 from labyrinth.data_models.annotations import Annotation
-from labyrinth.types import Array, HWCImage
+from labyrinth.types import Array, FloatRange, HWCImage
 
 
 def sprite_read(annotation: Annotation) -> Array:
@@ -64,6 +64,7 @@ def place_sprite(
     y_min: int,
     background_array: HWCImage[np.uint8],
     sprite_array: HWCImage[np.uint8],
+    alpha_blend: Annotated[float, FloatRange(0.0, 1.0)] = 1.0,
 ) -> Array:
     """Places the sprite in the background.
 
@@ -74,6 +75,7 @@ def place_sprite(
         y_min: Upper left corner y value
         background_array: The background to place in the mask
         sprite_array: The sprite array
+        alpha_blend: Amount (0 -> 1.0) to blend the sprite and background together
 
     Returns:
         background_array: The background with the sprite placed
@@ -94,8 +96,16 @@ def place_sprite(
     alpha_sprite = sprite_array[sprite_alpha_idx] // 255
     alpha_sprite = alpha_sprite[..., None]
 
+    # Multiply together to zero out all rgb values in the sprite
+    sprite_array_zero = sprite_array[sprite_rgb_idx] * alpha_sprite
+
+    # Blend sprite pixels with background pixels
+    blended = (sprite_array_zero * alpha_blend) + (
+        patch * alpha_sprite * (1.0 - alpha_blend)
+    )
+
     # Splice the patch together
-    patch = sprite_array[sprite_rgb_idx] * alpha_sprite + patch * (1 - alpha_sprite)
+    patch = blended + patch * (1 - alpha_sprite)
 
     # Apply the mask
     background_array[patch_idx] = patch

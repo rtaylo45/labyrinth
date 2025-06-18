@@ -1,12 +1,13 @@
 #!/usr/bin/env python
 # Vidrovr Inc.
 
-from typing import List, Tuple
+from collections.abc import Callable
+from typing import Annotated, List, Tuple
 
 import numpy as np
 
 from labyrinth.data_models.bounding_boxes import BoundingBox
-from labyrinth.types import HWCImage
+from labyrinth.types import FloatRange, HWCImage
 from labyrinth.utils.general import calculate_iou
 from labyrinth.utils.sprite import bbox_squeeze, place_sprite
 
@@ -19,6 +20,7 @@ class UniformSpritePlacer:
     _y_min: int | None
     _x_max: int | None
     _y_max: int | None
+    _alpha_blend: Callable[[], Annotated[float, FloatRange(0.0, 1.0)]] | None
 
     def __init__(
         self,
@@ -27,12 +29,14 @@ class UniformSpritePlacer:
         y_min: int | None = None,
         x_max: int | None = None,
         y_max: int | None = None,
+        alpha_blend: Callable[[], float] | None = None,
     ) -> None:
         self._bbcls = bbox_cls
         self._x_min = x_min
         self._y_min = y_min
         self._x_max = x_max
         self._y_max = y_max
+        self._alpha_blend = alpha_blend
 
     def _check_clash(
         self, candidate: BoundingBox, bboxs: List[BoundingBox], iou_thresh: float = 0.0
@@ -112,7 +116,10 @@ class UniformSpritePlacer:
                 box_clash = self._check_clash(xywh, bboxs)
 
             # Place the mask and save bbox
-            placed = place_sprite(x_start, y_start, placed, mask_array)
+            blend_value = self._alpha_blend() if self._alpha_blend is not None else 1.0
+            placed = place_sprite(
+                x_start, y_start, placed, mask_array, alpha_blend=blend_value
+            )
             if xywh is not None:
                 bboxs.append(xywh)
 
