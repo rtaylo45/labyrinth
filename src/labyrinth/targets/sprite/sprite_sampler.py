@@ -58,11 +58,8 @@ class COCOSpriteSampler:
     def _get_sprite_files(self) -> Dict[int, List[str]]:
         assert self._coco is not None
 
-        anno_image_folder = (
-            os.path.basename(self._coco.annotation_file)
-            .split(".")[0]
-            .replace("instances_", "")
-        )
+        cat = self._coco.annotation_file.split("/")[-3]
+        anno_image_folder = f"{self._import_folder}/{cat}/images/default"
 
         mask_files = glob(
             f"{self._import_folder}/images/{anno_image_folder}/*_mask.png"
