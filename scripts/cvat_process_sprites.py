@@ -2,7 +2,6 @@
 # Vidrovr Inc.
 
 import os
-from glob import glob
 
 import numpy as np
 from PIL import Image as PILImage
@@ -12,6 +11,10 @@ from labyrinth.data_models.bounding_boxes import XYWH
 from labyrinth.types import Array
 from labyrinth.utils.loaders import coco_loader
 from labyrinth.utils.sprite import sprite_crop, sprite_read
+
+
+def get_subdir(dir):
+    return [name for name in os.listdir(dir) if os.path.isdir(os.path.join(dir, name))]
 
 
 def remove_spaces(directory):
@@ -63,19 +66,12 @@ def main(import_folder: str):
     Args:
         import_folder: CVAT exported dataset path
     """
-    # Set folder locations
-    images_folder = f"{import_folder}/images"
-    annotations_folder = f"{import_folder}/annotations"
+    cat_folders = [f"{import_folder}/{f}" for f in get_subdir(import_folder)]
 
-    # Remove spaces from all the names and replace them with underscore
-    remove_spaces(images_folder)
-    remove_spaces(annotations_folder)
+    # Loop over cat folders
+    for cat_folder in cat_folders:
+        annotation_file = f"{cat_folder}/annotations/instances_default.json"
 
-    # Gobble up all those annotation files
-    annotation_files = glob(f"{annotations_folder}/*.json")
-
-    # Loop over annotations
-    for annotation_file in annotation_files:
         # Coco model for the category
         coco = coco_loader(
             annotation_file,
@@ -84,11 +80,8 @@ def main(import_folder: str):
         )
 
         # Cut stuff up so we can figure out the image folder name for the annotations
-        anno_image_folder = (
-            os.path.basename(annotation_file).split(".")[0].replace("instances_", "")
-        )
-        anno_image_folder = f"{images_folder}/{anno_image_folder}"
-        print(f"Processing {os.path.basename(annotation_file)}")
+        anno_image_folder = f"{cat_folder}/images/default"
+        print(f"Processing {os.path.basename(cat_folder)}")
 
         # Build annotation id to image id map
         anno_id_to_image = {
