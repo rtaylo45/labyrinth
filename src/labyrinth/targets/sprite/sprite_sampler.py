@@ -61,9 +61,10 @@ class COCOSpriteSampler:
         cat = self._coco.annotation_file.split("/")[-3]
         anno_image_folder = f"{self._import_folder}/{cat}/images/default"
 
-        mask_files = glob(
-            f"{self._import_folder}/images/{anno_image_folder}/*_mask.png"
-        )
+        mask_files = glob(f"{anno_image_folder}/*_mask.png")
+
+        if len(mask_files) == 0:
+            raise ValueError(f"No mask files were found! ({mask_files})")
 
         label_ids = [self._get_label_id(file) for file in mask_files]
         label_sprite_map = {label_id: [] for label_id in label_ids}
