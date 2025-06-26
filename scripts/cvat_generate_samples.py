@@ -3,7 +3,6 @@
 
 import logging
 import os
-from glob import glob
 from uuid import uuid4
 
 import albumentations as A
@@ -27,6 +26,19 @@ from labyrinth.utils.loaders import coco_loader
 
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger("labyrinth")
+
+
+def get_subdir(dir: str):
+    return [name for name in os.listdir(dir) if os.path.isdir(os.path.join(dir, name))]
+
+
+def get_cat_count(mask_cat_count: dict[str, int]):
+    cat_count = 0
+    for _, value in mask_cat_count.items():
+        if value > 0:
+            cat_count += 1
+
+    return cat_count
 
 
 def get_background_generator(name: str) -> BackgroundGenerator:
@@ -180,7 +192,8 @@ def generate_samples(
     mask_cat_counts,
     output_dir,
 ) -> None:
-    total_samples = len(categories) * samples_per_cat
+    num_cats = get_cat_count(mask_cat_counts)
+    total_samples = num_cats * samples_per_cat
     cat_counts = {category.id - 1: 0 for category in categories}
     activate_samples = 0
 
@@ -246,9 +259,10 @@ def main(
         min_samples_per_label: The min number of samples per label
         background_name: Type of background generator you want to use
     """
+    cat_folders = [f"{import_folder}/{f}" for f in get_subdir(import_folder)]
+
     # Gobble up all those annotation files
-    annotations_folder = f"{import_folder}/annotations"
-    annotation_files = glob(f"{annotations_folder}/*.json")
+    annotation_files = [f"{f}/annotations/instances_default.json" for f in cat_folders]
 
     # Create folders
     make_folders(output_dir)
@@ -265,6 +279,7 @@ def main(
         COCOSpriteSampler(coco, import_folder, max_num_sprites=4) for coco in cocos
     ]
     mask_sampler = sum(mask_samplers[1:], mask_samplers[0])
+    print(mask_sampler._mask_files.keys())
     mask_placer = UniformSpritePlacer(bbox_cls=XYWH)  # type: ignore
     sprite_aug_pipeline = get_sprite_augmentation()
     sprite_augment = AlbumAugmentation(sprite_aug_pipeline)
