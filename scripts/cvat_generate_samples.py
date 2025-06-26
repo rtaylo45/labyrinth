@@ -279,7 +279,6 @@ def main(
         COCOSpriteSampler(coco, import_folder, max_num_sprites=4) for coco in cocos
     ]
     mask_sampler = sum(mask_samplers[1:], mask_samplers[0])
-    print(mask_sampler._mask_files.keys())
     mask_placer = UniformSpritePlacer(bbox_cls=XYWH)  # type: ignore
     sprite_aug_pipeline = get_sprite_augmentation()
     sprite_augment = AlbumAugmentation(sprite_aug_pipeline)
