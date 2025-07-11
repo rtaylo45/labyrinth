@@ -138,24 +138,42 @@ class COCOSpriteSampler:
 
 class FolderSpriteSampler:
     _folder: List[str]
+    _folder_ids: List[int] | None
     _max_num_sprites: int
     _sprite_files: Dict[int, List[str]]
 
     def __init__(
         self,
-        folder: str | Sequence[str],
+        folder: str | List[str],
         max_num_sprites: int = 1,
         glob_expression: str | None = None,
+        folder_ids: int | List[int] | None = None,
     ):
         if isinstance(folder, str):
             self._folder = [folder]
+            num_folders = 1
 
-        elif isinstance(folder, Sequence):
+        elif isinstance(folder, List):
             self._folder = []
             for f in folder:
                 if not os.path.exists(f):
                     raise ValueError(f"Path ({f}) does not exists.")
                 self._folder.append(f)
+            num_folders = len(self._folder)
+
+        if isinstance(folder_ids, int):
+            self._folder_ids = [folder_ids]
+            num_labels = 1
+
+        elif (isinstance(folder_ids, List)) or folder_ids is None:
+            self._folder_ids = folder_ids
+            if folder_ids is not None:
+                num_labels = len(folder_ids)
+            else:
+                num_labels = None
+
+        if (num_labels is not None) and (num_folders != num_labels):
+            raise ValueError("Number of folders does not equal number of labels!")
 
         self._sprite_files = self._get_sprite_files(glob_expression)
         self._max_num_sprites = max_num_sprites
@@ -182,16 +200,19 @@ class FolderSpriteSampler:
     def _get_sprite_files(
         self,
         glob_expression: str | None = None,
-    ):
+    ) -> dict[int, List[str]]:
         expression = glob_expression if glob_expression is not None else "*_mask.png"
 
         sprite_files = {}
-        for folder in self._folder:
+        for i, folder in enumerate(self._folder):
             files = glob(f"{folder}/{expression}")
             if len(files) == 0:
                 raise ValueError(f"No files found in folder. {folder}/{expression}")
 
-            file_to_id = {file: self._get_label_id(file) for file in files}
+            if self._folder_ids is not None:
+                file_to_id = {file: self._folder_ids[i] for file in files}
+            else:
+                file_to_id = {file: self._get_label_id(file) for file in files}
 
             for file, id in file_to_id.items():
                 if sprite_files.get(id) is None:
