@@ -3,7 +3,7 @@
 
 from typing import Tuple
 
-from labyrinth.augmentations import ImageAugmentation
+from labyrinth.augmentations import ImageAugmentationProtocol
 from labyrinth.backgrounds.protocol import BackgroundGeneratorProtocol
 from labyrinth.data_models.bounding_boxes import BoundingBox
 from labyrinth.modifiers import MaskBackgroundModifier
@@ -16,9 +16,9 @@ class GenerateSample:
     _background_generator: BackgroundGeneratorProtocol
     _sprite_sampler: SpriteSampler
     _sprite_placer: SpritePlacer
-    _sprite_augment: ImageAugmentation | None
-    _background_augment: ImageAugmentation | None
-    _sample_augment: ImageAugmentation | None
+    _sprite_augment: ImageAugmentationProtocol | None
+    _background_augment: ImageAugmentationProtocol | None
+    _sample_augment: ImageAugmentationProtocol | None
     _mask_background_modifier: MaskBackgroundModifier | None
 
     def __init__(
@@ -26,9 +26,9 @@ class GenerateSample:
         background_generator: BackgroundGeneratorProtocol,
         sprite_sampler: SpriteSampler,
         sprite_placer: SpritePlacer,
-        sprite_augment: ImageAugmentation | None = None,
-        background_augment: ImageAugmentation | None = None,
-        sample_augment: ImageAugmentation | None = None,
+        sprite_augment: ImageAugmentationProtocol | None = None,
+        background_augment: ImageAugmentationProtocol | None = None,
+        sample_augment: ImageAugmentationProtocol | None = None,
         mask_background_modifier: MaskBackgroundModifier | None = None,
     ) -> None:
         self._background_generator = background_generator

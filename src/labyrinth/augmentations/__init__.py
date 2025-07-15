@@ -1,4 +1,4 @@
 from labyrinth.augmentations.methods import AlbumAugmentation, DummyAugment
-from labyrinth.augmentations.protocol import ImageAugmentation
+from labyrinth.augmentations.protocol import ImageAugmentationProtocol
 
-__all__ = ("ImageAugmentation", "DummyAugment", "AlbumAugmentation")
+__all__ = ("ImageAugmentationProtocol", "DummyAugment", "AlbumAugmentation")
