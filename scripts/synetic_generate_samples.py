@@ -11,7 +11,6 @@ from tqdm import tqdm
 
 from labyrinth.augmentations import AlbumAugmentation
 from labyrinth.backgrounds import (
-    BackgroundGenerator,
     FolderBackgroundGenerator,
     RGBAColorGenerator,
     SolidBackgroundGenerator,
@@ -26,7 +25,9 @@ logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger("labyrinth")
 
 
-def get_background_generator(name: str) -> BackgroundGenerator:
+def get_background_generator(
+    name: str,
+) -> SolidBackgroundGenerator | FolderBackgroundGenerator:
     background_gen = None
     if name == "folder":
         background_gen = FolderBackgroundGenerator(

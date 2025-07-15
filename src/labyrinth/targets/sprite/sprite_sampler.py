@@ -3,18 +3,19 @@
 
 import os
 from glob import glob
-from typing import Dict, List, Sequence, Tuple
+from typing import Dict, List, Tuple
 
 import numpy as np
 from PIL import Image
 
 from labyrinth.data_models.coco import COCO
+from labyrinth.targets.sprite.protocol import SpriteSamplerProtocol
 from labyrinth.types import Array
 
 rng = np.random.default_rng()
 
 
-class COCOSpriteSampler:
+class COCOSpriteSampler(SpriteSamplerProtocol):
     _is_coco_seq: bool
     _coco: COCO | None
     _import_folder: str | None
@@ -136,7 +137,7 @@ class COCOSpriteSampler:
         return mask_arrays, labels
 
 
-class FolderSpriteSampler:
+class FolderSpriteSampler(SpriteSamplerProtocol):
     _folder: List[str]
     _folder_ids: List[int] | None
     _max_num_sprites: int
