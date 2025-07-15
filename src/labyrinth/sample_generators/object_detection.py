@@ -7,15 +7,15 @@ from labyrinth.augmentations import ImageAugmentationProtocol
 from labyrinth.backgrounds.protocol import BackgroundGeneratorProtocol
 from labyrinth.data_models.bounding_boxes import BoundingBox
 from labyrinth.modifiers import MaskBackgroundModifier
-from labyrinth.targets.sprite import SpritePlacer, SpriteSampler
+from labyrinth.targets.sprite import SpritePlacerProtocol, SpriteSamplerProtocol
 from labyrinth.types import Array
 from labyrinth.utils import with_timeout
 
 
 class GenerateSample:
     _background_generator: BackgroundGeneratorProtocol
-    _sprite_sampler: SpriteSampler
-    _sprite_placer: SpritePlacer
+    _sprite_sampler: SpriteSamplerProtocol
+    _sprite_placer: SpritePlacerProtocol
     _sprite_augment: ImageAugmentationProtocol | None
     _background_augment: ImageAugmentationProtocol | None
     _sample_augment: ImageAugmentationProtocol | None
@@ -24,8 +24,8 @@ class GenerateSample:
     def __init__(
         self,
         background_generator: BackgroundGeneratorProtocol,
-        sprite_sampler: SpriteSampler,
-        sprite_placer: SpritePlacer,
+        sprite_sampler: SpriteSamplerProtocol,
+        sprite_placer: SpritePlacerProtocol,
         sprite_augment: ImageAugmentationProtocol | None = None,
         background_augment: ImageAugmentationProtocol | None = None,
         sample_augment: ImageAugmentationProtocol | None = None,
