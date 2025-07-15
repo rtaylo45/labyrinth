@@ -4,7 +4,7 @@
 from typing import Tuple
 
 from labyrinth.augmentations import ImageAugmentation
-from labyrinth.backgrounds import BackgroundGenerator
+from labyrinth.backgrounds.protocol import BackgroundGeneratorProtocol
 from labyrinth.data_models.bounding_boxes import BoundingBox
 from labyrinth.modifiers import MaskBackgroundModifier
 from labyrinth.targets.sprite import SpritePlacer, SpriteSampler
@@ -13,7 +13,7 @@ from labyrinth.utils import with_timeout
 
 
 class GenerateSample:
-    _background_generator: BackgroundGenerator
+    _background_generator: BackgroundGeneratorProtocol
     _sprite_sampler: SpriteSampler
     _sprite_placer: SpritePlacer
     _sprite_augment: ImageAugmentation | None
@@ -23,7 +23,7 @@ class GenerateSample:
 
     def __init__(
         self,
-        background_generator: BackgroundGenerator,
+        background_generator: BackgroundGeneratorProtocol,
         sprite_sampler: SpriteSampler,
         sprite_placer: SpritePlacer,
         sprite_augment: ImageAugmentation | None = None,
