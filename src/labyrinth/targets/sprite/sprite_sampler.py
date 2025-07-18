@@ -223,7 +223,7 @@ class FolderSpriteSampler(SpriteSamplerProtocol):
 
         return sprite_files
 
-    def _sample_files(self, label_id: int | None = None) -> List[str]:
+    def _sample_files(self, label_id: int | None = None) -> Tuple[List[int], List[str]]:
         if label_id is not None:
             file_range = self._sprite_files[label_id]
             num_mask = (
@@ -233,6 +233,7 @@ class FolderSpriteSampler(SpriteSamplerProtocol):
             )
 
             files = list(rng.choice(file_range, size=num_mask))
+            labels = [label_id for _ in range(len(files))]
         else:
             label_range = list(self._sprite_files.keys())
             num_mask = (
@@ -247,7 +248,8 @@ class FolderSpriteSampler(SpriteSamplerProtocol):
                 mask_range = self._sprite_files[label]
                 files.append(rng.choice(mask_range))
 
-        return files
+        labels = [int(lab) for lab in labels]
+        return labels, files
 
     def _read_sprite(self, file: str) -> Array:
         return np.array(Image.open(file), dtype=np.uint8)
@@ -256,8 +258,7 @@ class FolderSpriteSampler(SpriteSamplerProtocol):
         self,
         label_id: int | None = None,
     ) -> Tuple[List[Array], List[int]]:
-        files = self._sample_files(label_id=label_id)
-        labels = [self._get_label_id(file_name) for file_name in files]
+        labels, files = self._sample_files(label_id=label_id)
         arrays = [self._read_sprite(file) for file in files]
 
         return arrays, labels

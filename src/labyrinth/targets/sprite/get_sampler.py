@@ -26,7 +26,7 @@ class COCOSpriteSamplerModel(BaseModel):
 
 
 class FolderSpriteSamplerModel(BaseModel):
-    folder: DirectoryPath | List[DirectoryPath]
+    import_folder: DirectoryPath | List[DirectoryPath]
     max_num_sprites: PositiveInt = 1
     glob_expression: str | None = None
     folder_ids: int | List[int] | None = None
@@ -34,11 +34,21 @@ class FolderSpriteSamplerModel(BaseModel):
     def build_sampler(
         self,
     ) -> FolderSpriteSampler:
+        folder = self.import_folder
+        if type(folder) is not list:
+            folder = [str(folder)]
+        else:
+            folder = [str(f) for f in folder]
+
+        folder_ids = self.folder_ids
+        if (type(folder_ids) is int) and (folder_ids is not None):
+            folder_ids = [folder_ids]
+
         sprite_sampler = FolderSpriteSampler(
-            folder=str(self.folder),
+            folder=folder,
             max_num_sprites=self.max_num_sprites,
             glob_expression=self.glob_expression,
-            folder_ids=self.folder_ids,
+            folder_ids=folder_ids,
         )
 
         return sprite_sampler
