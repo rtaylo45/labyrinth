@@ -5,8 +5,11 @@ from labyrinth.backgrounds.models import (
     SolidBackgroundGeneratorModel,
 )
 from labyrinth.targets.sprite.models import (
+    BaseSpritePlacerModel,
+    BaseSpriteSamplerModel,
     COCOSpriteSamplerModel,
     FolderSpriteSamplerModel,
+    UniformSpritePlacerModel,
 )
 
 __all__ = [
@@ -14,6 +17,9 @@ __all__ = [
     "SolidBackgroundGeneratorModel",
     "FolderBackgroundGeneratorModel",
     "BackgroundComposition",
+    "BaseSpriteSamplerModel",
+    "BaseSpritePlacerModel",
     "COCOSpriteSamplerModel",
     "FolderSpriteSamplerModel",
+    "UniformSpritePlacerModel",
 ]
