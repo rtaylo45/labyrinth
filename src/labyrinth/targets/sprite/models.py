@@ -33,10 +33,8 @@ class COCOSpriteSamplerModel(BaseSpriteSamplerModel):
 
         return None
 
-    def __call__(
-        self,
-    ) -> Any:
-        return self.sampler()
+    def __call__(self, label_id: int | None = None) -> Any:
+        return self.sampler(label_id=label_id)
 
 
 class FolderSpriteSamplerModel(BaseSpriteSamplerModel):
@@ -68,7 +66,5 @@ class FolderSpriteSamplerModel(BaseSpriteSamplerModel):
 
         return None
 
-    def __call__(
-        self,
-    ) -> Any:
-        return self.sampler()
+    def __call__(self, label_id: int | None = None) -> Any:
+        return self.sampler(label_id=label_id)
