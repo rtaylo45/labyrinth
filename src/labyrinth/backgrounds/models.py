@@ -33,7 +33,7 @@ MAX_WIDTH = 1280
 
 class BaseBackgroundGeneratorModel(ABC, BaseModel, extra="allow"):
     @abstractmethod
-    def model_post_init(self, *args, **kwargs): ...
+    def model_post_init(self, *args, **kwargs) -> None: ...
 
     @abstractmethod
     def __call__(self, *args, **kwargs) -> Any: ...
@@ -68,7 +68,7 @@ class SolidBackgroundGeneratorModel(BaseBackgroundGeneratorModel):
 
     def __call__(
         self,
-    ):
+    ) -> Any:
         return self.gen()
 
 

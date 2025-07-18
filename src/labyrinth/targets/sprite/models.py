@@ -1,4 +1,5 @@
-from typing import List, Literal, get_args
+from abc import ABC, abstractmethod
+from typing import Any, List, Literal
 
 from pydantic import BaseModel, DirectoryPath, PositiveInt
 
@@ -8,32 +9,44 @@ from labyrinth.targets.sprite import COCOSpriteSampler, FolderSpriteSampler
 ACCEPTED_METHODS = Literal["coco", "folder"]
 
 
-class COCOSpriteSamplerModel(BaseModel):
+class BaseSpriteSamplerModel(ABC, BaseModel, extra="allow"):
+    @abstractmethod
+    def model_post_init(self, *args, **kwargs) -> None: ...
+
+    @abstractmethod
+    def __call__(self, *args, **kwargs) -> Any: ...
+
+
+class COCOSpriteSamplerModel(BaseSpriteSamplerModel):
+    method: Literal["coco"] = "coco"
     coco: COCO | None = None
     import_folder: DirectoryPath | None = None
     max_num_sprites: PositiveInt = 1
 
-    def build_sampler(
-        self,
-    ):
+    def model_post_init(self, _) -> None:
         sprite_sampler = COCOSpriteSampler(
             coco=self.coco,
             import_folder=str(self.import_folder),
             max_num_sprites=self.max_num_sprites,
         )
+        self.sampler = sprite_sampler
 
-        return sprite_sampler
+        return None
+
+    def __call__(
+        self,
+    ) -> Any:
+        return self.sampler()
 
 
-class FolderSpriteSamplerModel(BaseModel):
+class FolderSpriteSamplerModel(BaseSpriteSamplerModel):
+    method: Literal["folder"] = "folder"
     import_folder: DirectoryPath | List[DirectoryPath]
     max_num_sprites: PositiveInt = 1
     glob_expression: str | None = None
     folder_ids: int | List[int] | None = None
 
-    def build_sampler(
-        self,
-    ) -> FolderSpriteSampler:
+    def model_post_init(self, _) -> None:
         folder = self.import_folder
         if type(folder) is not list:
             folder = [str(folder)]
@@ -51,19 +64,11 @@ class FolderSpriteSamplerModel(BaseModel):
             folder_ids=folder_ids,
         )
 
-        return sprite_sampler
+        self.sampler = sprite_sampler
 
+        return None
 
-def sprite_sampler(
-    method: ACCEPTED_METHODS,
-    **kwargs,
-) -> COCOSpriteSampler | FolderSpriteSampler:
-    match method:
-        case "coco":
-            return COCOSpriteSamplerModel(**kwargs).build_sampler()
-        case "folder":
-            return FolderSpriteSamplerModel(**kwargs).build_sampler()
-        case _:
-            raise ValueError(
-                f"method ({method}) must be one of {get_args(ACCEPTED_METHODS)}"
-            )
+    def __call__(
+        self,
+    ) -> Any:
+        return self.sampler()

@@ -4,12 +4,16 @@ from labyrinth.backgrounds.models import (
     FolderBackgroundGeneratorModel,
     SolidBackgroundGeneratorModel,
 )
-from labyrinth.targets.sprite.get_sampler import sprite_sampler
+from labyrinth.targets.sprite.models import (
+    COCOSpriteSamplerModel,
+    FolderSpriteSamplerModel,
+)
 
 __all__ = [
     "BaseBackgroundGeneratorModel",
     "SolidBackgroundGeneratorModel",
     "FolderBackgroundGeneratorModel",
     "BackgroundComposition",
-    "sprite_sampler",
+    "COCOSpriteSamplerModel",
+    "FolderSpriteSamplerModel",
 ]
