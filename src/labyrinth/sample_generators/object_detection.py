@@ -3,15 +3,17 @@
 
 from typing import Tuple
 
-from labyrinth import (
+from labyrinth.augmentations import ImageAugmentationProtocol
+from labyrinth.backgrounds.models import (
     BackgroundComposition,
     BaseBackgroundGeneratorModel,
+)
+from labyrinth.data_models.bounding_boxes import BoundingBox
+from labyrinth.modifiers import MaskBackgroundModifierProtocol
+from labyrinth.targets.sprite.models import (
     BaseSpritePlacerModel,
     BaseSpriteSamplerModel,
 )
-from labyrinth.augmentations import ImageAugmentationProtocol
-from labyrinth.data_models.bounding_boxes import BoundingBox
-from labyrinth.modifiers import MaskBackgroundModifierProtocol
 from labyrinth.types import Array
 from labyrinth.utils import with_timeout
 

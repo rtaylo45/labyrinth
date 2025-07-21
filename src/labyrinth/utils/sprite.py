@@ -212,7 +212,7 @@ def _min_max_search(image: Array) -> Sequence:
 
     for _, options in options_dict.items():
         min_, max_ = options["min"], options["max"]
-        value = _run_convergence(min_, max_, image, direction=options["direction"])
+        value = _run_convergence(min_, max_, alpha, direction=options["direction"])
         options["value"] = value
 
     xmin = options_dict["xmin"]["value"]
