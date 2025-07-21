@@ -3,33 +3,37 @@
 
 from typing import Tuple
 
+from labyrinth import (
+    BackgroundComposition,
+    BaseBackgroundGeneratorModel,
+    BaseSpritePlacerModel,
+    BaseSpriteSamplerModel,
+)
 from labyrinth.augmentations import ImageAugmentationProtocol
-from labyrinth.backgrounds.protocol import BackgroundGeneratorProtocol
 from labyrinth.data_models.bounding_boxes import BoundingBox
-from labyrinth.modifiers import MaskBackgroundModifier
-from labyrinth.targets.sprite import SpritePlacerProtocol, SpriteSamplerProtocol
+from labyrinth.modifiers import MaskBackgroundModifierProtocol
 from labyrinth.types import Array
 from labyrinth.utils import with_timeout
 
 
 class GenerateSample:
-    _background_generator: BackgroundGeneratorProtocol
-    _sprite_sampler: SpriteSamplerProtocol
-    _sprite_placer: SpritePlacerProtocol
+    _background_generator: BaseBackgroundGeneratorModel | BackgroundComposition
+    _sprite_sampler: BaseSpriteSamplerModel
+    _sprite_placer: BaseSpritePlacerModel
     _sprite_augment: ImageAugmentationProtocol | None
     _background_augment: ImageAugmentationProtocol | None
     _sample_augment: ImageAugmentationProtocol | None
-    _mask_background_modifier: MaskBackgroundModifier | None
+    _mask_background_modifier: MaskBackgroundModifierProtocol | None
 
     def __init__(
         self,
-        background_generator: BackgroundGeneratorProtocol,
-        sprite_sampler: SpriteSamplerProtocol,
-        sprite_placer: SpritePlacerProtocol,
+        background_generator: BaseBackgroundGeneratorModel | BackgroundComposition,
+        sprite_sampler: BaseSpriteSamplerModel,
+        sprite_placer: BaseSpritePlacerModel,
         sprite_augment: ImageAugmentationProtocol | None = None,
         background_augment: ImageAugmentationProtocol | None = None,
         sample_augment: ImageAugmentationProtocol | None = None,
-        mask_background_modifier: MaskBackgroundModifier | None = None,
+        mask_background_modifier: MaskBackgroundModifierProtocol | None = None,
     ) -> None:
         self._background_generator = background_generator
         self._sprite_sampler = sprite_sampler
