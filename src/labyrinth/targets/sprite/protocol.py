@@ -7,7 +7,7 @@ from labyrinth.data_models.bounding_boxes import BoundingBox
 from labyrinth.types import Array
 
 
-class SpritePlacer(Protocol):
+class SpritePlacerProtocol(Protocol):
     def __init__(self, *args, **kwargs) -> None: ...
 
     def __call__(
@@ -17,7 +17,7 @@ class SpritePlacer(Protocol):
     ) -> Tuple[Array, List[BoundingBox]]: ...
 
 
-class SpriteSampler(Protocol):
+class SpriteSamplerProtocol(Protocol):
     def __init__(self, *args, **kwargs) -> None: ...
 
     def __call__(

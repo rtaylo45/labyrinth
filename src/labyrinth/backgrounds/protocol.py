@@ -7,7 +7,7 @@ from labyrinth.types.array import Array
 from labyrinth.types.color_space import ColorSpace
 
 
-class BackgroundGenerator(Protocol):
+class BackgroundGeneratorProtocol(Protocol):
     def __init__(self, *args, **kwargs) -> None: ...
 
     def __call__(
@@ -15,7 +15,7 @@ class BackgroundGenerator(Protocol):
     ) -> Array: ...
 
 
-class ColorGenerator(Protocol):
+class ColorGeneratorProtocol(Protocol):
     def __init__(self, *args, **kwargs) -> None: ...
 
     def __call__(
