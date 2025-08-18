@@ -11,7 +11,6 @@ from tqdm import tqdm
 
 from labyrinth.augmentations import AlbumAugmentation
 from labyrinth.backgrounds import (
-    BackgroundGenerator,
     FolderBackgroundGenerator,
     RGBAColorGenerator,
     SolidBackgroundGenerator,
@@ -41,7 +40,9 @@ def get_cat_count(mask_cat_count: dict[str, int]):
     return cat_count
 
 
-def get_background_generator(name: str) -> BackgroundGenerator:
+def get_background_generator(
+    name: str,
+) -> SolidBackgroundGenerator | FolderBackgroundGenerator:
     background_gen = None
     if name == "folder":
         background_gen = FolderBackgroundGenerator(

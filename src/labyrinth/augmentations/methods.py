@@ -3,10 +3,11 @@
 
 import albumentations as A
 
+from labyrinth.augmentations.protocol import ImageAugmentationProtocol
 from labyrinth.types import Array
 
 
-class DummyAugment:
+class DummyAugment(ImageAugmentationProtocol):
     def __init__(self) -> None:
         pass
 
@@ -14,7 +15,7 @@ class DummyAugment:
         return array
 
 
-class AlbumAugmentation:
+class AlbumAugmentation(ImageAugmentationProtocol):
     """Class that handels Albumentations augmentations."""
 
     _pipeline: A.Compose

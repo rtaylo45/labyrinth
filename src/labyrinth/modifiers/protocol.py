@@ -6,7 +6,7 @@ from typing import List, Protocol, Tuple
 from labyrinth.types import Array
 
 
-class MaskBackgroundModifier(Protocol):
+class MaskBackgroundModifierProtocol(Protocol):
     def __init__(self, *args, **kwargs) -> None: ...
 
     def __call__(

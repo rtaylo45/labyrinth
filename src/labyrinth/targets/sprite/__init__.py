@@ -1,4 +1,7 @@
-from labyrinth.targets.sprite.protocol import SpritePlacer, SpriteSampler
+from labyrinth.targets.sprite.protocol import (
+    SpritePlacerProtocol,
+    SpriteSamplerProtocol,
+)
 from labyrinth.targets.sprite.sprite_placer import UniformSpritePlacer
 from labyrinth.targets.sprite.sprite_sampler import (
     COCOSpriteSampler,
@@ -6,8 +9,8 @@ from labyrinth.targets.sprite.sprite_sampler import (
 )
 
 __all__ = (
-    "SpritePlacer",
-    "SpriteSampler",
+    "SpritePlacerProtocol",
+    "SpriteSamplerProtocol",
     "UniformSpritePlacer",
     "COCOSpriteSampler",
     "FolderSpriteSampler",

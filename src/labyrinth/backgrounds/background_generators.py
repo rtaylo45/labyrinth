@@ -1,19 +1,22 @@
 #!/usr/bin/env python
 # By: Zack Taylor
 
-import os
 from glob import glob
 
 import numpy as np
 from PIL import Image
 
-from labyrinth.backgrounds.protocol import ColorGenerator
+from labyrinth.backgrounds.protocol import (
+    BackgroundGeneratorProtocol,
+    ColorGeneratorProtocol,
+)
 from labyrinth.types import Array
 
 rng = np.random.default_rng()
 
 
-class SolidBackgroundGenerator:
+class SolidBackgroundGenerator(BackgroundGeneratorProtocol):
+    _color_generator: ColorGeneratorProtocol
     _h_min: int
     _h_max: int
     _w_min: int
@@ -21,13 +24,13 @@ class SolidBackgroundGenerator:
 
     def __init__(
         self,
-        color_generator: ColorGenerator,
+        color_generator: ColorGeneratorProtocol,
         height_min: int = 100,
         height_max: int = 720,
         width_min: int = 100,
         width_max: int = 1280,
     ):
-        self.color_generator = color_generator
+        self._color_generator = color_generator
         self._h_min = height_min
         self._h_max = height_max
         self._w_min = width_min
@@ -42,7 +45,7 @@ class SolidBackgroundGenerator:
     def __call__(
         self,
     ) -> Array:
-        color = self.color_generator()
+        color = self._color_generator()
         size = self._sample_size()
 
         channels = []
@@ -55,7 +58,7 @@ class SolidBackgroundGenerator:
         return array
 
 
-class FolderBackgroundGenerator:
+class FolderBackgroundGenerator(BackgroundGeneratorProtocol):
     _files: list[str]
 
     def __init__(
@@ -64,9 +67,6 @@ class FolderBackgroundGenerator:
         number_of_samples: int | None = None,
         glob_expression: str | None = None,
     ):
-        if not os.path.exists(image_folder):
-            raise ValueError(f"Path ({image_folder}) does not exists.")
-
         expression = glob_expression if glob_expression is not None else "*"
         files = glob(f"{image_folder}/{expression}")
 

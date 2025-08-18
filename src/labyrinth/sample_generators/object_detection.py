@@ -3,33 +3,39 @@
 
 from typing import Tuple
 
-from labyrinth.augmentations import ImageAugmentation
-from labyrinth.backgrounds import BackgroundGenerator
+from labyrinth.augmentations import ImageAugmentationProtocol
+from labyrinth.backgrounds.models import (
+    BackgroundComposition,
+    BaseBackgroundGeneratorModel,
+)
 from labyrinth.data_models.bounding_boxes import BoundingBox
-from labyrinth.modifiers import MaskBackgroundModifier
-from labyrinth.targets.sprite import SpritePlacer, SpriteSampler
+from labyrinth.modifiers import MaskBackgroundModifierProtocol
+from labyrinth.targets.sprite.models import (
+    BaseSpritePlacerModel,
+    BaseSpriteSamplerModel,
+)
 from labyrinth.types import Array
 from labyrinth.utils import with_timeout
 
 
 class GenerateSample:
-    _background_generator: BackgroundGenerator
-    _sprite_sampler: SpriteSampler
-    _sprite_placer: SpritePlacer
-    _sprite_augment: ImageAugmentation | None
-    _background_augment: ImageAugmentation | None
-    _sample_augment: ImageAugmentation | None
-    _mask_background_modifier: MaskBackgroundModifier | None
+    _background_generator: BaseBackgroundGeneratorModel | BackgroundComposition
+    _sprite_sampler: BaseSpriteSamplerModel
+    _sprite_placer: BaseSpritePlacerModel
+    _sprite_augment: ImageAugmentationProtocol | None
+    _background_augment: ImageAugmentationProtocol | None
+    _sample_augment: ImageAugmentationProtocol | None
+    _mask_background_modifier: MaskBackgroundModifierProtocol | None
 
     def __init__(
         self,
-        background_generator: BackgroundGenerator,
-        sprite_sampler: SpriteSampler,
-        sprite_placer: SpritePlacer,
-        sprite_augment: ImageAugmentation | None = None,
-        background_augment: ImageAugmentation | None = None,
-        sample_augment: ImageAugmentation | None = None,
-        mask_background_modifier: MaskBackgroundModifier | None = None,
+        background_generator: BaseBackgroundGeneratorModel | BackgroundComposition,
+        sprite_sampler: BaseSpriteSamplerModel,
+        sprite_placer: BaseSpritePlacerModel,
+        sprite_augment: ImageAugmentationProtocol | None = None,
+        background_augment: ImageAugmentationProtocol | None = None,
+        sample_augment: ImageAugmentationProtocol | None = None,
+        mask_background_modifier: MaskBackgroundModifierProtocol | None = None,
     ) -> None:
         self._background_generator = background_generator
         self._sprite_sampler = sprite_sampler

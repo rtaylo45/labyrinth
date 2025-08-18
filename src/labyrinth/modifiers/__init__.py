@@ -3,10 +3,10 @@ from labyrinth.modifiers.methods import (
     FourierDomainAdaptation,
     HistogramMatching,
 )
-from labyrinth.modifiers.protocol import MaskBackgroundModifier
+from labyrinth.modifiers.protocol import MaskBackgroundModifierProtocol
 
 __all__ = (
-    "MaskBackgroundModifier",
+    "MaskBackgroundModifierProtocol",
     "AlbumMaskBackgroundModifier",
     "FourierDomainAdaptation",
     "HistogramMatching",

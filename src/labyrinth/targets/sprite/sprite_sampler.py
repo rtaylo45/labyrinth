@@ -3,18 +3,19 @@
 
 import os
 from glob import glob
-from typing import Dict, List, Sequence, Tuple
+from typing import Dict, List, Tuple
 
 import numpy as np
 from PIL import Image
 
 from labyrinth.data_models.coco import COCO
+from labyrinth.targets.sprite.protocol import SpriteSamplerProtocol
 from labyrinth.types import Array
 
 rng = np.random.default_rng()
 
 
-class COCOSpriteSampler:
+class COCOSpriteSampler(SpriteSamplerProtocol):
     _is_coco_seq: bool
     _coco: COCO | None
     _import_folder: str | None
@@ -136,7 +137,7 @@ class COCOSpriteSampler:
         return mask_arrays, labels
 
 
-class FolderSpriteSampler:
+class FolderSpriteSampler(SpriteSamplerProtocol):
     _folder: List[str]
     _folder_ids: List[int] | None
     _max_num_sprites: int
@@ -222,7 +223,7 @@ class FolderSpriteSampler:
 
         return sprite_files
 
-    def _sample_files(self, label_id: int | None = None) -> List[str]:
+    def _sample_files(self, label_id: int | None = None) -> Tuple[List[int], List[str]]:
         if label_id is not None:
             file_range = self._sprite_files[label_id]
             num_mask = (
@@ -232,6 +233,7 @@ class FolderSpriteSampler:
             )
 
             files = list(rng.choice(file_range, size=num_mask))
+            labels = [label_id for _ in range(len(files))]
         else:
             label_range = list(self._sprite_files.keys())
             num_mask = (
@@ -246,7 +248,8 @@ class FolderSpriteSampler:
                 mask_range = self._sprite_files[label]
                 files.append(rng.choice(mask_range))
 
-        return files
+        labels = [int(lab) for lab in labels]
+        return labels, files
 
     def _read_sprite(self, file: str) -> Array:
         return np.array(Image.open(file), dtype=np.uint8)
@@ -255,8 +258,7 @@ class FolderSpriteSampler:
         self,
         label_id: int | None = None,
     ) -> Tuple[List[Array], List[int]]:
-        files = self._sample_files(label_id=label_id)
-        labels = [self._get_label_id(file_name) for file_name in files]
+        labels, files = self._sample_files(label_id=label_id)
         arrays = [self._read_sprite(file) for file in files]
 
         return arrays, labels
