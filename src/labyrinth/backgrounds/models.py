@@ -14,10 +14,10 @@ from pydantic import (
 )
 
 from labyrinth.backgrounds import (
-    FolderBackgroundGenerator,
+    FolderBGSampler,
     RGBASampler,
     RGBSampler,
-    SolidBackgroundGenerator,
+    SolidBGSampler,
 )
 
 rng = np.random.default_rng()
@@ -54,7 +54,7 @@ class SolidBackgroundGeneratorModel(BaseBackgroundGeneratorModel):
         else:
             color_gen = RGBASampler()
 
-        background_gen = SolidBackgroundGenerator(
+        background_gen = SolidBGSampler(
             color_generator=color_gen,
             height_min=self.min_height,
             height_max=self.max_height,
@@ -79,7 +79,7 @@ class FolderBackgroundGeneratorModel(BaseBackgroundGeneratorModel):
     glob_expression: str | None = None
 
     def model_post_init(self, _) -> None:
-        background_gen = FolderBackgroundGenerator(
+        background_gen = FolderBGSampler(
             image_folder=str(self.image_folder),
             number_of_samples=self.max_num_samples,
             glob_expression=self.glob_expression,

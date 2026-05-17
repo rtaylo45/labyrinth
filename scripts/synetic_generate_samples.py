@@ -11,9 +11,9 @@ from tqdm import tqdm
 
 from labyrinth.augmentations import AlbumAugmentation
 from labyrinth.backgrounds import (
-    FolderBackgroundGenerator,
+    FolderBGSampler,
     RGBASampler,
-    SolidBackgroundGenerator,
+    SolidBGSampler,
 )
 from labyrinth.data_models.bounding_boxes import CENTER_XYWH, XYWH
 from labyrinth.modifiers import AlbumMaskBackgroundModifier
@@ -27,10 +27,10 @@ logger = logging.getLogger("labyrinth")
 
 def get_background_generator(
     name: str,
-) -> SolidBackgroundGenerator | FolderBackgroundGenerator:
+) -> SolidBGSampler | FolderBGSampler:
     background_gen = None
     if name == "folder":
-        background_gen = FolderBackgroundGenerator(
+        background_gen = FolderBGSampler(
             "/shared_data/oidv7/train", glob_expression="*.jpg"
         )
 
@@ -42,7 +42,7 @@ def get_background_generator(
             alpha_max=255,
         )
 
-        background_gen = SolidBackgroundGenerator(
+        background_gen = SolidBGSampler(
             color_generator=color_gen,
             height_min=2160 // 2,
             height_max=2160,

@@ -7,7 +7,7 @@ from labyrinth.types.array import Array
 from labyrinth.types.color_space import ColorSpace
 
 
-class BackgroundGeneratorProtocol(Protocol):
+class BGSampler(Protocol):
     def __init__(self, *args, **kwargs) -> None: ...
 
     def __call__(
