@@ -22,7 +22,9 @@ Augmentations are also a key feature of Labyrinth, allowing users to independent
 TODO: Point to examples folder and talk about them.
 
 # Install
-In the main directory run `pip install -Ue .`
+In the main directory run `uv sync` to create a virtual environment and install all dependencies.
+
+To include PyTorch support, run `uv sync --extra torch`.
 
 Install pre-commit hooks:
 * Install the `pre-commit` package in your local environment and run `pip install pre-commit`
