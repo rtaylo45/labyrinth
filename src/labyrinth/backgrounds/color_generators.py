@@ -9,7 +9,7 @@ from labyrinth.types.color_space import RGB, RGBA
 rng = np.random.default_rng()
 
 
-class RGBColorGenerator(ColorGeneratorProtocol):
+class RGBSampler(ColorGeneratorProtocol):
     _color_min: int
     _color_max: int
 
@@ -38,7 +38,7 @@ class RGBColorGenerator(ColorGeneratorProtocol):
         return (r, g, b)
 
 
-class RGBAColorGenerator(ColorGeneratorProtocol):
+class RGBASampler(ColorGeneratorProtocol):
     _constant_alpha: bool
     _color_min: int
     _color_max: int

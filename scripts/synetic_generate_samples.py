@@ -12,7 +12,7 @@ from tqdm import tqdm
 from labyrinth.augmentations import AlbumAugmentation
 from labyrinth.backgrounds import (
     FolderBackgroundGenerator,
-    RGBAColorGenerator,
+    RGBASampler,
     SolidBackgroundGenerator,
 )
 from labyrinth.data_models.bounding_boxes import CENTER_XYWH, XYWH
@@ -35,7 +35,7 @@ def get_background_generator(
         )
 
     elif name == "random":
-        color_gen = RGBAColorGenerator(
+        color_gen = RGBASampler(
             color_min=0,
             color_max=255,
             alpha_min=255,
