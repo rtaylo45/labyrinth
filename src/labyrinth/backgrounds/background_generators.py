@@ -8,7 +8,7 @@ from PIL import Image
 
 from labyrinth.backgrounds.protocol import (
     BackgroundGeneratorProtocol,
-    ColorGeneratorProtocol,
+    ColorSampler,
 )
 from labyrinth.types import Array
 
@@ -16,7 +16,7 @@ rng = np.random.default_rng()
 
 
 class SolidBackgroundGenerator(BackgroundGeneratorProtocol):
-    _color_generator: ColorGeneratorProtocol
+    _color_generator: ColorSampler
     _h_min: int
     _h_max: int
     _w_min: int
@@ -24,7 +24,7 @@ class SolidBackgroundGenerator(BackgroundGeneratorProtocol):
 
     def __init__(
         self,
-        color_generator: ColorGeneratorProtocol,
+        color_generator: ColorSampler,
         height_min: int = 100,
         height_max: int = 720,
         width_min: int = 100,

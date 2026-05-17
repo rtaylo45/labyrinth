@@ -15,8 +15,8 @@ from pydantic import (
 
 from labyrinth.backgrounds import (
     FolderBackgroundGenerator,
-    RGBAColorGenerator,
-    RGBColorGenerator,
+    RGBASampler,
+    RGBSampler,
     SolidBackgroundGenerator,
 )
 
@@ -50,9 +50,9 @@ class SolidBackgroundGeneratorModel(BaseBackgroundGeneratorModel):
 
     def model_post_init(self, _) -> None:
         if self.mode == "RGB":
-            color_gen = RGBColorGenerator()
+            color_gen = RGBSampler()
         else:
-            color_gen = RGBAColorGenerator()
+            color_gen = RGBASampler()
 
         background_gen = SolidBackgroundGenerator(
             color_generator=color_gen,
