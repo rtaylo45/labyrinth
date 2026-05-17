@@ -15,7 +15,7 @@ class BackgroundGeneratorProtocol(Protocol):
     ) -> Array: ...
 
 
-class ColorGeneratorProtocol(Protocol):
+class ColorSampler(Protocol):
     def __init__(self, *args, **kwargs) -> None: ...
 
     def __call__(

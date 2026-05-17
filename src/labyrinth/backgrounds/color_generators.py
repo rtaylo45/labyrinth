@@ -3,13 +3,13 @@
 
 import numpy as np
 
-from labyrinth.backgrounds.protocol import ColorGeneratorProtocol
+from labyrinth.backgrounds.protocol import ColorSampler
 from labyrinth.types.color_space import RGB, RGBA
 
 rng = np.random.default_rng()
 
 
-class RGBSampler(ColorGeneratorProtocol):
+class RGBSampler(ColorSampler):
     _color_min: int
     _color_max: int
 
@@ -38,7 +38,7 @@ class RGBSampler(ColorGeneratorProtocol):
         return (r, g, b)
 
 
-class RGBASampler(ColorGeneratorProtocol):
+class RGBASampler(ColorSampler):
     _constant_alpha: bool
     _color_min: int
     _color_max: int
