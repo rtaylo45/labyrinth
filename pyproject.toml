@@ -21,11 +21,13 @@ dependencies = [
 ]
 
 [project.optional-dependencies]
-torch-cpu = [
+torch = [
     "torch>=2.7.0",
     "torchvision>=0.22.1",
 ]
-dev = [
+
+[tool.uv]
+dev-dependencies = [
     "pytest>=8.3.5",
 ]
 
