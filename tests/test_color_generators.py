@@ -1,6 +1,6 @@
 import pytest
 
-from labyrinth.backgrounds.color_generators import RGBASampler, RGBSampler
+from labyrinth.backgrounds.color_samplers import RGBASampler, RGBSampler
 
 
 class TestRGBSampler:

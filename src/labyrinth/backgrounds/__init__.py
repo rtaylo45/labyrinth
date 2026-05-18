@@ -1,8 +1,8 @@
-from labyrinth.backgrounds.background_generators import (
+from labyrinth.backgrounds.background_samplers import (
     FolderBGSampler,
     SolidBGSampler,
 )
-from labyrinth.backgrounds.color_generators import RGBASampler, RGBSampler
+from labyrinth.backgrounds.color_samplers import RGBASampler, RGBSampler
 
 __all__ = (
     "SolidBGSampler",

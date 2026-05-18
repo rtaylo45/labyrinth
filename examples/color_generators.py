@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 """Examples showing how to use the color generator classes."""
 
-from labyrinth.backgrounds.color_generators import RGBASampler, RGBSampler
+from labyrinth.backgrounds.color_samplers import RGBASampler, RGBSampler
 
 # --- RGBSampler ---
 
