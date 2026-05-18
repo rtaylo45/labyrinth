@@ -12,17 +12,17 @@ class TestRGBSampler:
         sampler = RGBSampler()
         for _ in range(20):
             r, g, b = sampler()
-            assert 0 <= r < 255
-            assert 0 <= g < 255
-            assert 0 <= b < 255
+            assert 0 <= r <= 255
+            assert 0 <= g <= 255
+            assert 0 <= b <= 255
 
     def test_values_within_restricted_range(self):
         sampler = RGBSampler(color_min=50, color_max=100)
         for _ in range(20):
             r, g, b = sampler()
-            assert 50 <= r < 100
-            assert 50 <= g < 100
-            assert 50 <= b < 100
+            assert 50 <= r <= 100
+            assert 50 <= g <= 100
+            assert 50 <= b <= 100
 
     def test_returns_ints(self):
         r, g, b = RGBSampler()()
@@ -66,19 +66,19 @@ class TestRGBASampler:
         sampler = RGBASampler()
         for _ in range(20):
             r, g, b, a = sampler()
-            assert 0 <= r < 255
-            assert 0 <= g < 255
-            assert 0 <= b < 255
-            assert 0 <= a < 255
+            assert 0 <= r <= 255
+            assert 0 <= g <= 255
+            assert 0 <= b <= 255
+            assert 0 <= a <= 255
 
     def test_values_within_restricted_range(self):
         sampler = RGBASampler(color_min=50, color_max=100, alpha_min=200, alpha_max=250)
         for _ in range(20):
             r, g, b, a = sampler()
-            assert 50 <= r < 100
-            assert 50 <= g < 100
-            assert 50 <= b < 100
-            assert 200 <= a < 250
+            assert 50 <= r <= 100
+            assert 50 <= g <= 100
+            assert 50 <= b <= 100
+            assert 200 <= a <= 250
 
     def test_constant_alpha(self):
         sampler = RGBASampler(alpha_min=255, alpha_max=255)
